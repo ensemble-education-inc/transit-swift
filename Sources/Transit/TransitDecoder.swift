@@ -63,6 +63,7 @@ public final class TransitDecoder {
             guard let untyped = dictOfValues[key.stringValue] else {
                 throw DecodingError.keyNotFound(key, .init(codingPath: codingPath, debugDescription: "\(key) key not found"))
             }
+            print(T.self)
             guard let typed = untyped as? T else {
                 throw DecodingError.typeMismatch(T.self, .init(codingPath: codingPath, debugDescription: "Expected type \(T.self) and found \(type(of: untyped))"))
             }
@@ -79,7 +80,9 @@ public final class TransitDecoder {
         }
 
         func decodeNil(forKey key: Key) throws -> Bool {
-            throw TransitDecoderError.notImplemented
+            let value = try value(forKey: key) as Any
+
+            return type(of: value) == NSNull.self
         }
 
         func decode(_ type: Bool.Type, forKey key: Key) throws -> Bool {
