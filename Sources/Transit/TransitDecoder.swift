@@ -26,7 +26,7 @@ public final class TransitDecoder {
         }
 
         init(json: Any, codingPath: [CodingKey]) {
-            self.json = dictifyArrays(transformDocumentWithRegisteredHandlers(value: json))
+            self.json = transformDocumentWithRegisteredHandlers(value: json)
             self.codingPath = codingPath
         }
 

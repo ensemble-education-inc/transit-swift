@@ -44,4 +44,4 @@ public struct ScalarHandler: Handler {
     }
 }
 
-let registeredHandlers: [Handler] = [SetHandler(), ScalarHandler()]
+let registeredHandlers: [Handler] = [SetHandler(), ScalarHandler(), MapHandler()]
