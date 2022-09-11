@@ -18,8 +18,6 @@ func transformDocumentWithRegisteredHandlers(value: Any) -> Any {
 
 public protocol Handler {
     func transform(value: Any) -> Any
-
-    func write()
 }
 
 public struct SetHandler: Handler {
@@ -31,10 +29,6 @@ public struct SetHandler: Handler {
             return value
         }
         return array[1]
-    }
-
-    public func write() {
-        fatalError()
     }
 }
 
