@@ -202,4 +202,16 @@ final class MapTests: XCTestCase {
 
         XCTAssertEqual(decoded, Set([1,2,3]))
     }
+
+    func testSetEmpty() throws {
+        // set_empty.json
+        let data = """
+        ["~#set",[]]
+        """
+        .data(using: .utf8)!
+
+        let decoded = try TransitDecoder().decode(Set<Int>.self, from: data)
+
+        XCTAssertEqual(decoded, Set([]))
+    }
 }
