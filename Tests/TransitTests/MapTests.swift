@@ -226,7 +226,7 @@ final class MapTests: XCTestCase {
 
         XCTAssertEqual(decoded, false)
     }
-    
+
     func testOneScalar() throws {
         // one.json
         let data = """
