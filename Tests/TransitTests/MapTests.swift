@@ -169,7 +169,7 @@ final class MapTests: XCTestCase {
     }
 
     func testMapsFourCharKeywordKeys() throws {
-        // maps_four_char_keyword_keys.verbose.json
+        // maps_four_char_keyword_keys.json
         let data = """
         [["^ ","~:bbbb",2,"~:aaaa",1],["^ ","^0",4,"^1",3],["^ ","^0",6,"^1",5]]
         """
