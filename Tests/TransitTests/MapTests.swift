@@ -191,4 +191,15 @@ final class MapTests: XCTestCase {
 
     }
 
+    func testSetSimple() throws {
+        // set_simple.json
+        let data = """
+        ["~#set",[1,3,2]]
+        """
+        .data(using: .utf8)!
+
+        let decoded = try TransitDecoder().decode(Set<Int>.self, from: data)
+
+        XCTAssertEqual(decoded, Set([1,2,3]))
+    }
 }
