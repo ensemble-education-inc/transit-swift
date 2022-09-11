@@ -214,4 +214,30 @@ final class MapTests: XCTestCase {
 
         XCTAssertEqual(decoded, Set([]))
     }
+
+    func testFalseScalar() throws {
+        // false.json
+        let data = """
+        ["~#'",false]
+        """
+        .data(using: .utf8)!
+
+        let decoded = try TransitDecoder().decode(Bool.self, from: data)
+
+        XCTAssertEqual(decoded, false)
+    }
+    
+    func testOneScalar() throws {
+        // one.json
+        let data = """
+        ["~#'",1]
+        """
+        .data(using: .utf8)!
+
+        let decoded = try TransitDecoder().decode(Int.self, from: data)
+
+        XCTAssertEqual(decoded, 1)
+    }
+
+
 }

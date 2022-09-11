@@ -32,4 +32,16 @@ public struct SetHandler: Handler {
     }
 }
 
-let registeredHandlers: [Handler] = [SetHandler()]
+public struct ScalarHandler: Handler {
+    public func transform(value: Any) -> Any {
+        guard let array = value as? [Any] else {
+            return value
+        }
+        guard array.first as? String == "~#'" else {
+            return value
+        }
+        return array[1]
+    }
+}
+
+let registeredHandlers: [Handler] = [SetHandler(), ScalarHandler()]
