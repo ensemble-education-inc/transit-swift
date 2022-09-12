@@ -35,4 +35,15 @@ final class ScalarTests: XCTestCase {
         XCTAssertEqual(decoded, 1)
     }
 
+    func testNullScalar() throws {
+        // nil.json
+        let data = """
+        ["~#'",null]
+        """
+        .data(using: .utf8)!
+
+        let decoded = try TransitDecoder().decode(Int?.self, from: data)
+
+        XCTAssertEqual(decoded, nil)
+    }
 }

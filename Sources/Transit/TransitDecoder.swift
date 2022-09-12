@@ -197,9 +197,10 @@ public final class TransitDecoder {
             return typed
         }
 
-        func decodeNil() throws -> Bool {
-            throw TransitDecoderError.notImplemented
-//            try currentValue()
+        mutating func decodeNil() throws -> Bool {
+            let value = try currentValue() as Any
+
+            return type(of: value) == NSNull.self
         }
 
         func nestedContainer<NestedKey>(keyedBy type: NestedKey.Type) throws -> KeyedDecodingContainer<NestedKey> where NestedKey : CodingKey {
@@ -300,7 +301,13 @@ public final class TransitDecoder {
         }
 
         func decodeNil() -> Bool {
-            return false
+            do {
+                let value = try currentValue() as Any
+
+                return type(of: value) == NSNull.self
+            } catch {
+                return false
+            }
         }
 
         func decode(_ type: Bool.Type) throws -> Bool {
@@ -360,8 +367,7 @@ public final class TransitDecoder {
         }
 
         func decode<T>(_ type: T.Type) throws -> T where T : Decodable {
-            throw TransitDecoderError.notImplemented
-//            try currentValue()
+            try currentValue()
         }
     }
 }
