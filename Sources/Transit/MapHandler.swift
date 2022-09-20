@@ -10,23 +10,6 @@ import Foundation
 struct MapHandler: Handler {
     let objectMarker = "^ "
 
-    func lookupKeyIndex(_ key: String) -> Int? {
-        guard key.starts(with: "^") else { return nil }
-
-        var lookupKey = key.dropFirst()
-        guard lookupKey.count <= 2 else { return nil }
-        if lookupKey.count == 1 {
-            lookupKey.insert("0", at: lookupKey.startIndex)
-        }
-        let index = lookupKey
-            .reversed()
-            .enumerated()
-            .reduce(0, { acc, el in
-                acc + (Int(el.element.asciiValue ?? 0) - 48) * Int(pow(Double(44), Double(el.offset)))
-            })
-        return index
-    }
-
     func transform(value possibleArray: Any, context: inout Context) -> Any {
         guard let array = possibleArray as? [Any] else {
             return possibleArray
@@ -41,12 +24,7 @@ struct MapHandler: Handler {
         slice.removeFirst()
         var dict: [String: Any] = [:]
         while let key = slice.popFirst().flatMap({ $0 as? String }), let value = slice.popFirst() {
-            var keyToUse = key
-            if let index = lookupKeyIndex(key) {
-                keyToUse = context.keywordCache[Int(index)]
-            } else {
-                keyToUse = context.insertInCache(keyToUse)
-            }
+            let keyToUse = context.normalize(rawKey: key)
             var valueToInsert = value
             if let nestedArray = value as? [Any] {
                 valueToInsert = self.transform(value: nestedArray, context: &context)
