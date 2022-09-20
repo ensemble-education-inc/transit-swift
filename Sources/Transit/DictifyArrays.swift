@@ -8,11 +8,7 @@
 import Foundation
 
 struct MapHandler: Handler {
-    private let objectMarker = "^ "
-
-    func transform(value: Any, context: inout Context) -> Any {
-        return dictifyArrays(value, context: &context)
-    }
+    let objectMarker = "^ "
 
     func lookupKeyIndex(_ key: String) -> Int? {
         guard key.starts(with: "^") else { return nil }
@@ -31,52 +27,37 @@ struct MapHandler: Handler {
         return index
     }
 
-    func dictifyArrays(_ possibleArray: Any, context: inout Context) -> Any {
-        func insertInCache(_ string: String) {
-            if string.count > 1 {
-                context.keywordCache.append(string)
-            }
-        }
-
+    func transform(value possibleArray: Any, context: inout Context) -> Any {
         guard let array = possibleArray as? [Any] else {
             return possibleArray
         }
 
         var slice = array[...]
 
-        if slice.first as? String == objectMarker {
-            slice.removeFirst()
-            var dict: [String: Any] = [:]
-            while let key = slice.popFirst().flatMap({ $0 as? String }), let value = slice.popFirst() {
-                var keyToUse = key
-                if let index = lookupKeyIndex(key) {
-                    keyToUse = context.keywordCache[Int(index)]
-                } else {
-                    if let keyword = Keyword(encoded: key)?.rawValue {
-                        keyToUse = keyword
-                    }
-                    if keyToUse.hasSuffix("?") { keyToUse.removeLast() }
-                    insertInCache(keyToUse)
-                }
-                var valueToInsert = value
-                if let nestedArray = value as? [Any] {
-                    valueToInsert = dictifyArrays(nestedArray, context: &context)
-                }
-                dict[keyToUse] = valueToInsert
-            }
-            return dict
+        guard slice.first as? String == objectMarker else {
+            return array
         }
 
-        for item in slice {
-            if let stringValue = (item as? String), stringValue.starts(with: "~:") {
-                let keyToUse = String(stringValue.dropFirst(2))
-                insertInCache(keyToUse)
+        slice.removeFirst()
+        var dict: [String: Any] = [:]
+        while let key = slice.popFirst().flatMap({ $0 as? String }), let value = slice.popFirst() {
+            var keyToUse = key
+            if let index = lookupKeyIndex(key) {
+                keyToUse = context.keywordCache[Int(index)]
+            } else {
+                if let keyword = Keyword(encoded: key)?.rawValue {
+                    keyToUse = keyword
+                }
+                if keyToUse.hasSuffix("?") { keyToUse.removeLast() }
+                context.insertInCache(keyToUse)
             }
+            var valueToInsert = value
+            if let nestedArray = value as? [Any] {
+                valueToInsert = self.transform(value: nestedArray, context: &context)
+            }
+            dict[keyToUse] = valueToInsert
         }
-
-        return slice.map({ item in
-            return dictifyArrays(item, context: &context)
-        })
+        return dict
     }
 
 }

@@ -8,17 +8,55 @@
 import Foundation
 
 func transformDocumentWithRegisteredHandlers(value: Any) -> Any {
+
+    var context = Context()
+
+    return transform(value: value, context: &context)
+}
+
+func transform(value: Any, context: inout Context) -> Any {
     guard let array = value as? [Any] else {
         return value
     }
-    var context = Context()
-    return registeredHandlers.reduce(array, { array, handler in
+
+    for item in array {
+        if let stringValue = (item as? String), stringValue.starts(with: "~:") {
+            let keyToUse = String(stringValue.dropFirst(2))
+            context.insertInCache(keyToUse)
+        }
+    }
+
+    let value = registeredHandlers.reduce(array, { array, handler in
         handler.transform(value: array, context: &context)
     })
+
+
+    if let array2 = value as? [Any] {
+        return array2.map({ item in
+            return transform(value: item, context: &context)
+        })
+    } else {
+        return value
+    }
 }
 
 public struct Context {
     var keywordCache: [String] = []
+
+    mutating func insertInCache(_ string: String) {
+        var keyToUse = string[...]
+        if keyToUse.starts(with: "~:") {
+            keyToUse = keyToUse.dropFirst(2)
+        }
+        if keyToUse.hasSuffix("?") {
+            keyToUse.removeLast()
+        }
+
+        if keyToUse.count > 1 {
+            keywordCache.append(String(keyToUse))
+        }
+    }
+
 }
 
 public protocol Handler {
@@ -49,4 +87,4 @@ public struct ScalarHandler: Handler {
     }
 }
 
-let registeredHandlers: [Handler] = [SetHandler(), ScalarHandler(), MapHandler()]
+let registeredHandlers: [Handler] = [MapHandler(), SetHandler(), ScalarHandler()]
