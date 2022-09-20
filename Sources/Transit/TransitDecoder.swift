@@ -1,5 +1,12 @@
 import Foundation
 
+let defaultHandlers: [Handler] = [
+    MapHandler(),
+    SetHandler(),
+    ScalarHandler(),
+    MillisecondsSince1970Handler(),
+    ISO8601DateHandler(),
+]
 
 public final class TransitDecoder {
     enum TransitDecoderError: Error {
@@ -13,7 +20,7 @@ public final class TransitDecoder {
     }
 
     public init() {
-        registeredHandlers = [MapHandler(), SetHandler(), ScalarHandler()]
+        registeredHandlers = defaultHandlers
     }
 
     public func decode<T: Decodable>(_ t: T.Type, from data: Data) throws -> T {

@@ -15,11 +15,7 @@ func transformDocument(value: Any, withRegisteredHandlers registeredHandlers: [H
 }
 
 func transform(value: Any, context: inout Context) -> Any {
-    guard let array = value as? [Any] else {
-        return value
-    }
-
-    let value = context.registeredHandlers.reduce(array, { array, handler in
+    let value = context.registeredHandlers.reduce(value, { array, handler in
         handler.transform(value: array, context: &context)
     })
 

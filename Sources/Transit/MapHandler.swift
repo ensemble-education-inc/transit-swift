@@ -30,10 +30,7 @@ struct MapHandler: Handler {
         var dict: [String: Any] = [:]
         while let key = slice.popFirst().flatMap({ $0 as? String }), let value = slice.popFirst() {
             let keyToUse = context.normalize(rawKey: key)
-            var valueToInsert = value
-            if let nestedArray = value as? [Any] {
-                valueToInsert = Transit.transform(value: nestedArray, context: &context)
-            }
+            let valueToInsert = Transit.transform(value: value, context: &context)
             dict[keyToUse] = valueToInsert
         }
         return dict
