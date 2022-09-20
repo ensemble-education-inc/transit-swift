@@ -45,11 +45,7 @@ struct MapHandler: Handler {
             if let index = lookupKeyIndex(key) {
                 keyToUse = context.keywordCache[Int(index)]
             } else {
-                if let keyword = Keyword(encoded: key)?.rawValue {
-                    keyToUse = keyword
-                }
-                if keyToUse.hasSuffix("?") { keyToUse.removeLast() }
-                context.insertInCache(keyToUse)
+                keyToUse = context.insertInCache(keyToUse)
             }
             var valueToInsert = value
             if let nestedArray = value as? [Any] {

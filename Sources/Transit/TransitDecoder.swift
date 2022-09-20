@@ -57,7 +57,7 @@ public final class TransitDecoder {
 
         var dictOfValues: [String: Any] {
             decoder.json as? [String: Any] ?? [:]
-         }
+        }
 
         func value<T>(forKey key: Key) throws -> T {
             guard let untyped = dictOfValues[key.stringValue] else {

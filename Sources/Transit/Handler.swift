@@ -43,18 +43,21 @@ func transform(value: Any, context: inout Context) -> Any {
 public struct Context {
     var keywordCache: [String] = []
 
-    mutating func insertInCache(_ string: String) {
+    mutating func insertInCache(_ string: String) -> String {
         var keyToUse = string[...]
         if keyToUse.starts(with: "~:") {
-            keyToUse = keyToUse.dropFirst(2)
+            keyToUse.removeFirst(2)
         }
         if keyToUse.hasSuffix("?") {
             keyToUse.removeLast()
         }
 
+        let sanitized = String(keyToUse)
         if keyToUse.count > 1 {
-            keywordCache.append(String(keyToUse))
+            print("caching \(keyToUse) at \(keywordCache.count)")
+            keywordCache.append(sanitized)
         }
+        return sanitized
     }
 
 }
