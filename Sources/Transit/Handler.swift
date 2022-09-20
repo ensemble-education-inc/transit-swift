@@ -21,8 +21,7 @@ func transform(value: Any, context: inout Context) -> Any {
 
     for item in array {
         if let stringValue = (item as? String), stringValue.starts(with: "~:") {
-            let keyToUse = String(stringValue.dropFirst(2))
-            context.insertInCache(keyToUse)
+            context.insertInCache(stringValue)
         }
     }
 
