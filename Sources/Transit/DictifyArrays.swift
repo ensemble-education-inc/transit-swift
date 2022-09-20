@@ -15,6 +15,23 @@ struct MapHandler: Handler {
         return dictifyArrays(value, keywordCache: &keywords)
     }
 
+    func lookupKeyIndex(_ key: String) -> Int? {
+        guard key.starts(with: "^") else { return nil }
+
+        var lookupKey = key.dropFirst()
+        guard lookupKey.count <= 2 else { return nil }
+        if lookupKey.count == 1 {
+            lookupKey.insert("0", at: lookupKey.startIndex)
+        }
+        let index = lookupKey
+            .reversed()
+            .enumerated()
+            .reduce(0, { acc, el in
+                acc + (Int(el.element.asciiValue ?? 0) - 48) * Int(pow(Double(44), Double(el.offset)))
+            })
+        return index
+    }
+
     func dictifyArrays(_ possibleArray: Any, keywordCache: inout [String]) -> Any {
         func insertInCache(_ string: String) {
             if string.count > 1 {
@@ -33,20 +50,8 @@ struct MapHandler: Handler {
             var dict: [String: Any] = [:]
             while let key = slice.popFirst().flatMap({ $0 as? String }), let value = slice.popFirst() {
                 var keyToUse = key
-                if key.starts(with: "^") {
-                    var lookupKey = key.dropFirst()
-                    if lookupKey.count <= 2 {
-                        if lookupKey.count == 1 {
-                            lookupKey.insert("0", at: lookupKey.startIndex)
-                        }
-                        let index = lookupKey
-                            .reversed()
-                            .enumerated()
-                            .reduce(0, { acc, el in
-                                acc + (Int(el.element.asciiValue ?? 0) - 48) * Int(pow(Double(44), Double(el.offset)))
-                            })
-                        keyToUse = keywordCache[Int(index)]
-                    }
+                if let index = lookupKeyIndex(key) {
+                    keyToUse = keywordCache[Int(index)]
                 } else {
                     if let keyword = Keyword(encoded: key)?.rawValue {
                         keyToUse = keyword
