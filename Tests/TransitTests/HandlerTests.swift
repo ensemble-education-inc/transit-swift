@@ -36,4 +36,20 @@ final class HandlerTests: XCTestCase {
         XCTAssertEqual(decoded, Set([]))
     }
 
+    func testSetInMap() throws {
+        let data = """
+        ["^ ","~:a_set",["~#set",[1,3,2]],"~:an_int",14]
+        """
+        .data(using: .utf8)!
+
+        struct Result: Codable {
+            let a_set: Set<Int>
+            let an_int: Int
+        }
+        let decoded = try TransitDecoder().decode(Result.self, from: data)
+
+        XCTAssertEqual(decoded.a_set, Set([1, 2, 3]))
+        XCTAssertEqual(decoded.an_int, 14)
+    }
+
 }
