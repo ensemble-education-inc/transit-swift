@@ -18,6 +18,11 @@ struct MapHandler: Handler {
         var slice = array[...]
 
         guard slice.first as? String == objectMarker else {
+            for item in array {
+                if let stringValue = (item as? String), stringValue.starts(with: "~:") {
+                    _ = context.insertInCache(stringValue)
+                }
+            }
             return array
         }
 
@@ -27,7 +32,7 @@ struct MapHandler: Handler {
             let keyToUse = context.normalize(rawKey: key)
             var valueToInsert = value
             if let nestedArray = value as? [Any] {
-                valueToInsert = self.transform(value: nestedArray, context: &context)
+                valueToInsert = Transit.transform(value: nestedArray, context: &context)
             }
             dict[keyToUse] = valueToInsert
         }

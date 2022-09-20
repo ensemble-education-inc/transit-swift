@@ -19,12 +19,6 @@ func transform(value: Any, context: inout Context) -> Any {
         return value
     }
 
-    for item in array {
-        if let stringValue = (item as? String), stringValue.starts(with: "~:") {
-            _ = context.insertInCache(stringValue)
-        }
-    }
-
     let value = registeredHandlers.reduce(array, { array, handler in
         handler.transform(value: array, context: &context)
     })
