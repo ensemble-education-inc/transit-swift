@@ -10,9 +10,8 @@ import Foundation
 struct MapHandler: Handler {
     private let objectMarker = "^ "
 
-    func transform(value: Any) -> Any {
-        var keywords: [String] = []
-        return dictifyArrays(value, keywordCache: &keywords)
+    func transform(value: Any, context: inout Context) -> Any {
+        return dictifyArrays(value, context: &context)
     }
 
     func lookupKeyIndex(_ key: String) -> Int? {
@@ -32,10 +31,10 @@ struct MapHandler: Handler {
         return index
     }
 
-    func dictifyArrays(_ possibleArray: Any, keywordCache: inout [String]) -> Any {
+    func dictifyArrays(_ possibleArray: Any, context: inout Context) -> Any {
         func insertInCache(_ string: String) {
             if string.count > 1 {
-                keywordCache.append(string)
+                context.keywordCache.append(string)
             }
         }
 
@@ -51,7 +50,7 @@ struct MapHandler: Handler {
             while let key = slice.popFirst().flatMap({ $0 as? String }), let value = slice.popFirst() {
                 var keyToUse = key
                 if let index = lookupKeyIndex(key) {
-                    keyToUse = keywordCache[Int(index)]
+                    keyToUse = context.keywordCache[Int(index)]
                 } else {
                     if let keyword = Keyword(encoded: key)?.rawValue {
                         keyToUse = keyword
@@ -61,7 +60,7 @@ struct MapHandler: Handler {
                 }
                 var valueToInsert = value
                 if let nestedArray = value as? [Any] {
-                    valueToInsert = dictifyArrays(nestedArray, keywordCache: &keywordCache)
+                    valueToInsert = dictifyArrays(nestedArray, context: &context)
                 }
                 dict[keyToUse] = valueToInsert
             }
@@ -76,7 +75,7 @@ struct MapHandler: Handler {
         }
 
         return slice.map({ item in
-            return dictifyArrays(item, keywordCache: &keywordCache)
+            return dictifyArrays(item, context: &context)
         })
     }
 

@@ -11,17 +11,22 @@ func transformDocumentWithRegisteredHandlers(value: Any) -> Any {
     guard let array = value as? [Any] else {
         return value
     }
+    var context = Context()
     return registeredHandlers.reduce(array, { array, handler in
-        handler.transform(value: array)
+        handler.transform(value: array, context: &context)
     })
 }
 
+public struct Context {
+    var keywordCache: [String] = []
+}
+
 public protocol Handler {
-    func transform(value: Any) -> Any
+    func transform(value: Any, context: inout Context) -> Any
 }
 
 public struct SetHandler: Handler {
-    public func transform(value: Any) -> Any {
+    public func transform(value: Any, context: inout Context) -> Any {
         guard let array = value as? [Any] else {
             return value
         }
@@ -33,7 +38,7 @@ public struct SetHandler: Handler {
 }
 
 public struct ScalarHandler: Handler {
-    public func transform(value: Any) -> Any {
+    public func transform(value: Any, context: inout Context) -> Any {
         guard let array = value as? [Any] else {
             return value
         }
