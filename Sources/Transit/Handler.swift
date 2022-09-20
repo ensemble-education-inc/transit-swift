@@ -7,9 +7,9 @@
 
 import Foundation
 
-func transformDocumentWithRegisteredHandlers(value: Any) -> Any {
+func transformDocument(value: Any, withRegisteredHandlers registeredHandlers: [Handler]) -> Any {
 
-    var context = Context()
+    var context = Context(registeredHandlers: registeredHandlers)
 
     return transform(value: value, context: &context)
 }
@@ -19,7 +19,7 @@ func transform(value: Any, context: inout Context) -> Any {
         return value
     }
 
-    let value = registeredHandlers.reduce(array, { array, handler in
+    let value = context.registeredHandlers.reduce(array, { array, handler in
         handler.transform(value: array, context: &context)
     })
 
@@ -34,6 +34,7 @@ func transform(value: Any, context: inout Context) -> Any {
 }
 
 public struct Context {
+    let registeredHandlers: [Handler]
     var keywordCache: [String] = []
 
     mutating func insertInCache(_ string: String) -> String {
@@ -83,4 +84,3 @@ public protocol Handler {
     func transform(value: Any, context: inout Context) -> Any
 }
 
-let registeredHandlers: [Handler] = [MapHandler(), SetHandler(), ScalarHandler()]
