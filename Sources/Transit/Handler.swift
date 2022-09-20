@@ -21,7 +21,7 @@ func transform(value: Any, context: inout Context) -> Any {
 
     for item in array {
         if let stringValue = (item as? String), stringValue.starts(with: "~:") {
-            context.insertInCache(stringValue)
+            _ = context.insertInCache(stringValue)
         }
     }
 
