@@ -83,28 +83,4 @@ public protocol Handler {
     func transform(value: Any, context: inout Context) -> Any
 }
 
-public struct SetHandler: Handler {
-    public func transform(value: Any, context: inout Context) -> Any {
-        guard let array = value as? [Any] else {
-            return value
-        }
-        guard array.first as? String == "~#set" else {
-            return value
-        }
-        return array[1]
-    }
-}
-
-public struct ScalarHandler: Handler {
-    public func transform(value: Any, context: inout Context) -> Any {
-        guard let array = value as? [Any] else {
-            return value
-        }
-        guard array.first as? String == "~#'" else {
-            return value
-        }
-        return array[1]
-    }
-}
-
 let registeredHandlers: [Handler] = [MapHandler(), SetHandler(), ScalarHandler()]
