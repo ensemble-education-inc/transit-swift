@@ -52,4 +52,44 @@ final class HandlerTests: XCTestCase {
         XCTAssertEqual(decoded.an_int, 14)
     }
 
+    func testListSimple() throws {
+        // set_simple.json
+        let data = """
+        ["~#list",[1,3,2]]
+        """
+        .data(using: .utf8)!
+
+        let decoded = try TransitDecoder().decode([Int].self, from: data)
+
+        XCTAssertEqual(decoded, [1,3,2])
+    }
+
+    func testListEmpty() throws {
+        // list_empty.json
+        let data = """
+        ["~#list",[]]
+        """
+        .data(using: .utf8)!
+
+        let decoded = try TransitDecoder().decode([Int].self, from: data)
+
+        XCTAssertEqual(decoded, [])
+    }
+
+    func testListInMap() throws {
+        let data = """
+        ["^ ","~:a_list",["~#list",[1,3,2]],"~:an_int",14]
+        """
+        .data(using: .utf8)!
+
+        struct Result: Codable {
+            let a_list: [Int]
+            let an_int: Int
+        }
+        let decoded = try TransitDecoder().decode(Result.self, from: data)
+
+        XCTAssertEqual(decoded.a_list, [1, 3, 2])
+        XCTAssertEqual(decoded.an_int, 14)
+    }
+
 }

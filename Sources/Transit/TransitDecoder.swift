@@ -4,6 +4,7 @@ let defaultHandlers: [Handler] = [
     MapHandler(),
     SetHandler(),
     ScalarHandler(),
+    ListHandler(),
     MillisecondsSince1970Handler(),
     ISO8601DateHandler(),
 ]
