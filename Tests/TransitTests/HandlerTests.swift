@@ -128,5 +128,43 @@ final class HandlerTests: XCTestCase {
         XCTAssertEqual(decoded[2].url, expectedURLs[2])
     }
 
+    func testUUIDMap() throws {
+        // uri_map.json
+        let uuid = UUID().uuidString
+        let data = """
+        ["^ ", "~:uuid", "~u\(uuid)"]
+        """
+        .data(using: .utf8)!
+
+        struct Result: Codable {
+            let uuid: UUID
+        }
+        let decoded = try TransitDecoder().decode(Result.self, from: data)
+
+        XCTAssertEqual(decoded.uuid.uuidString, uuid)
+    }
+
+    func testUUIDs() throws {
+        // uuids.json
+        let data = """
+            ["~u5a2cbea3-e8c6-428b-b525-21239370dd55","~ud1dc64fa-da79-444b-9fa4-d4412f427289","~u501a978e-3a3e-4060-b3be-1cf2bd4b1a38","~ub3ba141a-a776-48e4-9fae-a28ea8571f58"]
+        """
+        .data(using: .utf8)!
+
+        let decoded = try TransitDecoder().decode([UUID].self, from: data)
+
+        let expectedUUIDs = [
+            "5a2cbea3-e8c6-428b-b525-21239370dd55",
+            "d1dc64fa-da79-444b-9fa4-d4412f427289",
+            "501a978e-3a3e-4060-b3be-1cf2bd4b1a38",
+            "b3ba141a-a776-48e4-9fae-a28ea8571f58"
+        ].compactMap({ UUID(uuidString: $0) })
+
+        XCTAssertEqual(decoded[0], expectedUUIDs[0])
+        XCTAssertEqual(decoded[1], expectedUUIDs[1])
+        XCTAssertEqual(decoded[2], expectedUUIDs[2])
+        XCTAssertEqual(decoded[3], expectedUUIDs[3])
+    }
+
 
 }
