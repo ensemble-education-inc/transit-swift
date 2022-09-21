@@ -52,6 +52,24 @@ final class HandlerTests: XCTestCase {
         XCTAssertEqual(decoded.an_int, 14)
     }
 
+    func testSetWithDates() throws {
+        let data = """
+        ["~#set",["~m946728000000", "~t1776-07-04T12:00:00.000Z"]]
+        """
+        .data(using: .utf8)!
+
+        struct Result: Codable {
+            let a_set: Set<Int>
+            let an_int: Int
+        }
+        let decoded = try TransitDecoder().decode(Set<Date>.self, from: data)
+
+        let array = Array(decoded)
+
+        XCTAssertEqual(array[0], Date(timeIntervalSince1970: 946728000))
+        XCTAssertEqual(array[1], Date(timeIntervalSince1970: -6106017600))
+    }
+
     func testListSimple() throws {
         // set_simple.json
         let data = """
