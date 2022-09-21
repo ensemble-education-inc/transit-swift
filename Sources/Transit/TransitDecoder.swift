@@ -7,6 +7,7 @@ let defaultHandlers: [Handler] = [
     ListHandler(),
     MillisecondsSince1970Handler(),
     ISO8601DateHandler(),
+    URIHandler(),
 ]
 
 public final class TransitDecoder {
