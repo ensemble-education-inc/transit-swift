@@ -66,8 +66,8 @@ final class HandlerTests: XCTestCase {
 
         let array = Array(decoded)
 
-        XCTAssertEqual(array[0], Date(timeIntervalSince1970: 946728000))
-        XCTAssertEqual(array[1], Date(timeIntervalSince1970: -6106017600))
+        XCTAssertEqual(array[0], Date(timeIntervalSince1970: -6106017600))
+        XCTAssertEqual(array[1], Date(timeIntervalSince1970: 946728000))
     }
 
     func testListSimple() throws {
