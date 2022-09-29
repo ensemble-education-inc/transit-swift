@@ -19,7 +19,7 @@ struct MapHandler: Handler {
 
         guard slice.first as? String == objectMarker else {
             for item in array {
-                if let stringValue = (item as? String), stringValue.starts(with: "~:") {
+                if let stringValue = (item as? String), stringValue.starts(with: "~:") || stringValue.starts(with: "~#") {
                     _ = context.insertInCache(stringValue)
                 }
             }
