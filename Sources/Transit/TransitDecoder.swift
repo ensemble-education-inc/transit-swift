@@ -42,11 +42,11 @@ public final class TransitDecoder {
 
         convenience init(data: Data, codingPath: [CodingKey], handlers: [Handler]) throws {
             let json = try JSONSerialization.jsonObject(with: data)
-            self.init(json: json, codingPath: [], handlers: handlers)
+            try self.init(json: json, codingPath: [], handlers: handlers)
         }
 
-        init(json: Any, codingPath: [CodingKey], handlers: [Handler]) {
-            self.json = transformDocument(value: json, withRegisteredHandlers: handlers)
+        init(json: Any, codingPath: [CodingKey], handlers: [Handler]) throws {
+            self.json = try transformDocument(value: json, withRegisteredHandlers: handlers)
             self.codingPath = codingPath
             self.handlers = handlers
         }
@@ -163,14 +163,14 @@ public final class TransitDecoder {
 
         func decode<T>(_ type: T.Type, forKey key: Key) throws -> T where T : Decodable {
             let dict = try value(forKey: key) as Any
-            let decoder = _TransitDecoder(json: dict, codingPath: decoder.codingPath + [key], handlers: decoder.handlers)
+            let decoder = try _TransitDecoder(json: dict, codingPath: decoder.codingPath + [key], handlers: decoder.handlers)
             return try T(from: decoder)
         }
 
         func nestedContainer<NestedKey>(keyedBy type: NestedKey.Type, forKey key: Key) throws -> KeyedDecodingContainer<NestedKey> where NestedKey : CodingKey {
 
             let array = try value(forKey: key) as [Any]
-            let decoder = _TransitDecoder(json: array, codingPath: decoder.codingPath + [key], handlers: decoder.handlers)
+            let decoder = try _TransitDecoder(json: array, codingPath: decoder.codingPath + [key], handlers: decoder.handlers)
             return KeyedDecodingContainer(_KeyedContainer<NestedKey>(decoder: decoder))
         }
 
@@ -294,7 +294,7 @@ public final class TransitDecoder {
 
         mutating func decode<T>(_ type: T.Type) throws -> T where T : Decodable {
             let untyped = arrayOfValues[currentIndex]
-            let decoder = _TransitDecoder(json: untyped, codingPath: codingPath + [IntCodingKey(intValue: currentIndex)!], handlers: decoder.handlers)
+            let decoder = try _TransitDecoder(json: untyped, codingPath: codingPath + [IntCodingKey(intValue: currentIndex)!], handlers: decoder.handlers)
 
             currentIndex += 1
 

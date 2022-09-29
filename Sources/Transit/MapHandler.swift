@@ -10,7 +10,7 @@ import Foundation
 struct MapHandler: Handler {
     let objectMarker = "^ "
 
-    func transform(value possibleArray: Any, context: inout Context) -> Any {
+    func transform(value possibleArray: Any, context: inout Context) throws -> Any {
         guard let array = possibleArray as? [Any] else {
             return possibleArray
         }
@@ -29,8 +29,8 @@ struct MapHandler: Handler {
         slice.removeFirst()
         var dict: [String: Any] = [:]
         while let key = slice.popFirst().flatMap({ $0 as? String }), let value = slice.popFirst() {
-            let keyToUse = context.normalize(rawKey: key)
-            let valueToInsert = Transit.transform(value: value, context: &context)
+            let keyToUse = try context.normalize(rawKey: key)
+            let valueToInsert = try Transit.transform(value: value, context: &context)
             dict[keyToUse] = valueToInsert
         }
         return dict

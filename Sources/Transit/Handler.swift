@@ -7,22 +7,22 @@
 
 import Foundation
 
-func transformDocument(value: Any, withRegisteredHandlers registeredHandlers: [Handler]) -> Any {
+func transformDocument(value: Any, withRegisteredHandlers registeredHandlers: [Handler]) throws -> Any {
 
     var context = Context(registeredHandlers: registeredHandlers)
 
-    return transform(value: value, context: &context)
+    return try transform(value: value, context: &context)
 }
 
-func transform(value: Any, context: inout Context) -> Any {
-    let value = context.registeredHandlers.reduce(value, { array, handler in
-        handler.transform(value: array, context: &context)
+func transform(value: Any, context: inout Context) throws -> Any {
+    let value = try context.registeredHandlers.reduce(value, { array, handler in
+        try handler.transform(value: array, context: &context)
     })
 
 
     if let array2 = value as? [Any] {
-        return array2.map({ item in
-            return transform(value: item, context: &context)
+        return try array2.map({ item in
+            return try transform(value: item, context: &context)
         })
     } else {
         return value
@@ -66,9 +66,13 @@ public struct Context {
         return index
     }
 
-    mutating func normalize(rawKey: String) -> String {
+    mutating func normalize(rawKey: String) throws -> String {
         if let index = lookupKeyIndex(rawKey) {
-            return keywordCache[Int(index)]
+            if index < keywordCache.count {
+                return keywordCache[index]
+            } else {
+                throw DecodingError.dataCorrupted(.init(codingPath: [], debugDescription: "The cache key '\(rawKey)', index \(index), could not be found."))
+            }
         } else {
             return insertInCache(rawKey)
         }
@@ -77,6 +81,6 @@ public struct Context {
 }
 
 public protocol Handler {
-    func transform(value: Any, context: inout Context) -> Any
+    func transform(value: Any, context: inout Context) throws -> Any
 }
 
