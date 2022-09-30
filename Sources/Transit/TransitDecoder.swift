@@ -1,6 +1,7 @@
 import Foundation
 
 let defaultHandlers: [Handler] = [
+    CachingHandler(),
     MapHandler(),
     SetHandler(),
     ScalarHandler(),

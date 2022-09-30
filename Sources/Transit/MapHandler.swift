@@ -7,6 +7,15 @@
 
 import Foundation
 
+struct CachingHandler: Handler {
+    func transform(value: Any, context: inout Context) throws -> Any {
+        if let stringValue = (value as? String), ["~:", "~#", "~$"].contains(where: stringValue.starts(with:)) {
+            _ = context.insertInCache(stringValue)
+        }
+        return value
+    }
+}
+
 struct MapHandler: Handler {
     let objectMarker = "^ "
 
@@ -18,11 +27,6 @@ struct MapHandler: Handler {
         var slice = array[...]
 
         guard slice.first as? String == objectMarker else {
-            for item in array {
-                if let stringValue = (item as? String), ["~:", "~#", "~$"].contains(where: stringValue.starts(with:)) {
-                    _ = context.insertInCache(stringValue)
-                }
-            }
             return array
         }
 
