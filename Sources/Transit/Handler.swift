@@ -9,9 +9,9 @@ import Foundation
 
 func transformDocument(value: Any, withRegisteredHandlers registeredHandlers: [Handler]) throws -> Any {
 
-    var context = Context(registeredHandlers: registeredHandlers)
+    var context = Context(registeredHandlers: registeredHandlers, transformer: { context, value in try transform(value: value, context: &context) })
 
-    return try transform(value: value, context: &context)
+    return try context.transform(value: value)
 }
 
 func transform(value: Any, context: inout Context) throws -> Any {
@@ -32,6 +32,11 @@ func transform(value: Any, context: inout Context) throws -> Any {
 public struct Context {
     let registeredHandlers: [Handler]
     var keywordCache: [String] = []
+    let transformer: (inout Context, Any) throws -> Any
+
+    mutating func transform(value: Any) throws -> Any {
+        return try self.transformer(&self, value)
+    }
 
     mutating func insertInCache(_ string: String) -> String {
         var keyToUse = string[...]
