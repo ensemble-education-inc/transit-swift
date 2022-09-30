@@ -38,6 +38,9 @@ public struct Context {
         if keyToUse.starts(with: "~:") {
             keyToUse.removeFirst(2)
         }
+        if keyToUse.starts(with: "~$") {
+            keyToUse.removeFirst(2)
+        }
         if keyToUse.hasSuffix("?") {
             keyToUse.removeLast()
         }
