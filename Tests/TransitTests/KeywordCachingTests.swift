@@ -11,12 +11,13 @@ import XCTest
 
 final class KeywordCachingTests: XCTestCase {
 
-    let data = """
+    func testDecodingWithTag() throws {
+
+        let data = """
         ["^ ","~:result",["^ ","~:chet-curriculums",["~#list",[["^ ","~:id",43,"~:readable-id","learning-path","~:name","Learning Path","~:display-name",null,"~:order",2,"~:experimental",false],["^ ","^3",76,"^4","featured","^5","Featured","^6",null,"^7",3,"^8",false],["^ ","^3",5,"^4","games-by-topic","^5","Games By Topic","^6",null,"^7",1,"^8",false]]]]]
         """
-        .data(using: .utf8)!
+            .data(using: .utf8)!
 
-    func testDecoding() throws {
         struct Decoded: Codable {
             let result: Result
         }
