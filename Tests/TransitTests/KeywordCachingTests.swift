@@ -58,10 +58,25 @@ final class KeywordCachingTests: XCTestCase {
         }
 
         struct Result: Codable {
+            let namedExpressions: [NamedExpression]
 
+            enum CodingKeys: String, CodingKey {
+                case namedExpressions = "named-expressions"
+            }
+        }
+
+        struct NamedExpression: Codable {
+            let id: Int
+            let name: String
+            let expression: String
+            let kind: String
+            let location: String?
+            let scope: String
         }
 
         let decoded = try TransitDecoder().decode(Decoded.self, from: data)
+
+        XCTAssertEqual(decoded.result.namedExpressions[1].kind, "regex")
     }
 
 }
