@@ -213,7 +213,8 @@ public final class TransitDecoder {
         mutating func currentValue<T>() throws -> T {
             let untyped = arrayOfValues[currentIndex]
             guard let typed = untyped as? T else {
-                throw DecodingError.typeMismatch(T.self, .init(codingPath: codingPath + [IntCodingKey(intValue: currentIndex)], debugDescription: "Expected type \(T.self) and found \(type(of: untyped))"))
+                let path = codingPath + [IntCodingKey(intValue: currentIndex)].compactMap({ $0 })
+                throw DecodingError.typeMismatch(T.self, .init(codingPath: path, debugDescription: "Expected type \(T.self) and found \(type(of: untyped))"))
             }
             currentIndex += 1
             return typed
