@@ -83,10 +83,10 @@ public final class TransitDecoder {
 
         func value<T>(forKey key: Key) throws -> T {
             guard let untyped = dictOfValues[key.stringValue] else {
-                throw DecodingError.keyNotFound(key, .init(codingPath: codingPath, debugDescription: "\(key) key not found"))
+                throw DecodingError.keyNotFound(key, .init(codingPath: codingPath + [key], debugDescription: "\(key) key not found"))
             }
             guard let typed = untyped as? T else {
-                throw DecodingError.typeMismatch(T.self, .init(codingPath: codingPath, debugDescription: "Expected type \(T.self) and found \(type(of: untyped))"))
+                throw DecodingError.typeMismatch(T.self, .init(codingPath: codingPath + [key], debugDescription: "Expected type \(T.self) and found \(type(of: untyped))"))
             }
             return typed
         }
@@ -213,7 +213,7 @@ public final class TransitDecoder {
         mutating func currentValue<T>() throws -> T {
             let untyped = arrayOfValues[currentIndex]
             guard let typed = untyped as? T else {
-                throw DecodingError.typeMismatch(T.self, .init(codingPath: codingPath, debugDescription: "Expected type \(T.self) and found \(type(of: untyped))"))
+                throw DecodingError.typeMismatch(T.self, .init(codingPath: codingPath + [IntCodingKey(intValue: currentIndex)], debugDescription: "Expected type \(T.self) and found \(type(of: untyped))"))
             }
             currentIndex += 1
             return typed
