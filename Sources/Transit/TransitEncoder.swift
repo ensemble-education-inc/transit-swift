@@ -51,11 +51,11 @@ public final class TransitEncoder {
         }
 
         func unkeyedContainer() -> UnkeyedEncodingContainer {
-            fatalError()
+            _UnkeyedContainer(codingPath: codingPath, encoder: self)
         }
 
         func singleValueContainer() -> SingleValueEncodingContainer {
-            fatalError()
+            _SingleValueContainer(codingPath: codingPath, encoder: self)
         }
 
         struct _KeyedContainer<Key: CodingKey>: KeyedEncodingContainerProtocol {
@@ -151,9 +151,174 @@ public final class TransitEncoder {
             }
 
             mutating func superEncoder(forKey key: Key) -> Encoder {
+                encoder
+            }
+        }
+
+        struct _UnkeyedContainer: UnkeyedEncodingContainer {
+            var codingPath: [CodingKey]
+
+            var encoder: _TransitEncoder
+
+            var count: Int {
+                array.count
+            }
+
+            var array: [Any] = []
+
+            mutating func add(_ value: Any) {
+                array.append(value)
+            }
+
+            mutating func encodeNil() throws {
+                add(NSNull())
+            }
+
+            mutating func nestedContainer<NestedKey>(keyedBy keyType: NestedKey.Type) -> KeyedEncodingContainer<NestedKey> where NestedKey : CodingKey {
                 fatalError()
             }
 
+            mutating func nestedUnkeyedContainer() -> UnkeyedEncodingContainer {
+                fatalError()
+            }
+
+            mutating func superEncoder() -> Encoder {
+                encoder
+            }
+
+            mutating func encode(_ value: String) throws {
+                add(value)
+            }
+
+            mutating func encode(_ value: Double) throws {
+                add(value)
+            }
+
+            mutating func encode(_ value: Float) throws {
+                add(value)
+            }
+
+            mutating func encode(_ value: Int) throws {
+                add(value)
+            }
+
+            mutating func encode(_ value: Int8) throws {
+                add(value)
+            }
+
+            mutating func encode(_ value: Int16) throws {
+                add(value)
+            }
+
+            mutating func encode(_ value: Int32) throws {
+                add(value)
+            }
+
+            mutating func encode(_ value: Int64) throws {
+                add(value)
+            }
+
+            mutating func encode(_ value: UInt) throws {
+                add(value)
+            }
+
+            mutating func encode(_ value: UInt8) throws {
+                add(value)
+            }
+
+            mutating func encode(_ value: UInt16) throws {
+                add(value)
+            }
+
+            mutating func encode(_ value: UInt32) throws {
+                add(value)
+            }
+
+            mutating func encode(_ value: UInt64) throws {
+                add(value)
+            }
+
+            mutating func encode<T>(_ value: T) throws where T : Encodable {
+                let encoder = _TransitEncoder<T>(value: value, codingPath: codingPath + [IntCodingKey(intValue: count)].compactMap({ $0 }), handlers: encoder.handlers)
+                try value.encode(to: encoder)
+                add(encoder.array)
+            }
+
+            mutating func encode(_ value: Bool) throws {
+                add(value)
+            }
+        }
+
+        struct _SingleValueContainer: SingleValueEncodingContainer {
+            var codingPath: [CodingKey]
+
+            var encoder: _TransitEncoder
+
+            var stored: Any?
+
+            mutating func encodeNil() throws {
+                stored = NSNull()
+            }
+
+            mutating func encode(_ value: Bool) throws {
+                stored = value
+            }
+
+            mutating func encode(_ value: String) throws {
+                stored = value
+            }
+
+            mutating func encode(_ value: Double) throws {
+                stored = value
+            }
+
+            mutating func encode(_ value: Float) throws {
+                stored = value
+            }
+
+            mutating func encode(_ value: Int) throws {
+                stored = value
+            }
+
+            mutating func encode(_ value: Int8) throws {
+                stored = value
+            }
+
+            mutating func encode(_ value: Int16) throws {
+                stored = value
+            }
+
+            mutating func encode(_ value: Int32) throws {
+                stored = value
+            }
+
+            mutating func encode(_ value: Int64) throws {
+                stored = value
+            }
+
+            mutating func encode(_ value: UInt) throws {
+                stored = value
+            }
+
+            mutating func encode(_ value: UInt8) throws {
+                stored = value
+            }
+
+            mutating func encode(_ value: UInt16) throws {
+                stored = value
+            }
+
+            mutating func encode(_ value: UInt32) throws {
+                stored = value
+            }
+
+            mutating func encode(_ value: UInt64) throws {
+                stored = value
+            }
+
+            mutating func encode<T>(_ value: T) throws where T : Encodable {
+                stored = value
+            }
         }
     }
 }
