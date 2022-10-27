@@ -7,14 +7,14 @@
 
 import Foundation
 
-func transformDocument(value: Any, withRegisteredHandlers registeredHandlers: [Handler]) throws -> Any {
+func prepareForDecode(value: Any, withRegisteredHandlers registeredHandlers: [Handler]) throws -> Any {
 
-    var context = Context(registeredHandlers: registeredHandlers, transformer: { context, value in try transform(value: value, context: &context) })
+    var context = Context(registeredHandlers: registeredHandlers, transformer: { context, value in try prepareForDecode(value: value, context: &context) })
 
     return try context.transform(value: value)
 }
 
-func transform(value: Any, context: inout Context) throws -> Any {
+func prepareForDecode(value: Any, context: inout Context) throws -> Any {
     let value = try context.registeredHandlers.reduce(value, { array, handler in
         try handler.prepareForDecode(value: array, context: &context)
     })
@@ -22,7 +22,7 @@ func transform(value: Any, context: inout Context) throws -> Any {
 
     if let array2 = value as? [Any] {
         return try array2.map({ item in
-            return try transform(value: item, context: &context)
+            return try prepareForDecode(value: item, context: &context)
         })
     } else {
         return value

@@ -42,7 +42,7 @@ public final class TransitDecoder {
         }
 
         init(json: Any, codingPath: [CodingKey], handlers: [Handler]) throws {
-            self.json = try transformDocument(value: json, withRegisteredHandlers: handlers)
+            self.json = try prepareForDecode(value: json, withRegisteredHandlers: handlers)
             self.codingPath = codingPath
             self.handlers = handlers
         }
