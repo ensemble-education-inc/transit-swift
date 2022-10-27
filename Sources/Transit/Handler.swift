@@ -16,7 +16,7 @@ func transformDocument(value: Any, withRegisteredHandlers registeredHandlers: [H
 
 func transform(value: Any, context: inout Context) throws -> Any {
     let value = try context.registeredHandlers.reduce(value, { array, handler in
-        try handler.transform(value: array, context: &context)
+        try handler.prepareForDecode(value: array, context: &context)
     })
 
 
@@ -89,6 +89,6 @@ public struct Context {
 }
 
 public protocol Handler {
-    func transform(value: Any, context: inout Context) throws -> Any
+    func prepareForDecode(value: Any, context: inout Context) throws -> Any
 }
 

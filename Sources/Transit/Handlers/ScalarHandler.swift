@@ -8,7 +8,7 @@
 import Foundation
 
 public struct ScalarHandler: Handler {
-    public func transform(value: Any, context: inout Context) -> Any {
+    public func prepareForDecode(value: Any, context: inout Context) -> Any {
         guard let array = value as? [Any] else {
             return value
         }

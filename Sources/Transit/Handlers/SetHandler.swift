@@ -8,7 +8,7 @@
 import Foundation
 
 public struct SetHandler: Handler {
-    public func transform(value: Any, context: inout Context) throws -> Any {
+    public func prepareForDecode(value: Any, context: inout Context) throws -> Any {
         guard let array = value as? [Any] else {
             return value
         }
