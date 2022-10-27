@@ -9,8 +9,13 @@ import Foundation
 
 struct CachingHandler: Handler {
     func transform(value: Any, context: inout Context) throws -> Any {
-        if let stringValue = (value as? String), ["~:", "~#", "~$"].contains(where: stringValue.starts(with:)) {
-            _ = context.insertInCache(stringValue)
+        if let stringValue = (value as? String) {
+            if ["~:", "~#", "~$"].contains(where: stringValue.starts(with:)) {
+                _ = context.insertInCache(stringValue)
+            }
+            if stringValue.starts(with: "^") {
+                return try context.normalize(rawKey: stringValue)
+            }
         }
         return value
     }
