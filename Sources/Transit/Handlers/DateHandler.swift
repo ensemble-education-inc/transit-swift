@@ -8,7 +8,7 @@
 import Foundation
 
 public struct MillisecondsSince1970Handler: Handler {
-    public func transform(value: Any, context: inout Context) -> Any {
+    public func prepareForDecode(value: Any, context: inout Context) -> Any {
         guard let string = value as? String else {
             return value
         }
@@ -30,7 +30,7 @@ public struct ISO8601DateHandler: Handler {
         return formatter
     }()
 
-    public func transform(value: Any, context: inout Context) -> Any {
+    public func prepareForDecode(value: Any, context: inout Context) -> Any {
         guard let string = value as? String else {
             return value
         }

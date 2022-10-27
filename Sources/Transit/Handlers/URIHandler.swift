@@ -8,7 +8,7 @@
 import Foundation
 
 public struct URIHandler: Handler {
-    public func transform(value: Any, context: inout Context) -> Any {
+    public func prepareForDecode(value: Any, context: inout Context) -> Any {
         guard let string = value as? String else {
             return value
         }

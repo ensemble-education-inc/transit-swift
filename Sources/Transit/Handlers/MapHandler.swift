@@ -8,7 +8,7 @@
 import Foundation
 
 struct CachingHandler: Handler {
-    func transform(value: Any, context: inout Context) throws -> Any {
+    func prepareForDecode(value: Any, context: inout Context) throws -> Any {
         if let stringValue = (value as? String) {
             if ["~:", "~#", "~$"].contains(where: stringValue.starts(with:)) {
                 _ = context.insertInCache(stringValue)
@@ -24,7 +24,7 @@ struct CachingHandler: Handler {
 struct MapHandler: Handler {
     let objectMarker = "^ "
 
-    func transform(value possibleArray: Any, context: inout Context) throws -> Any {
+    func prepareForDecode(value possibleArray: Any, context: inout Context) throws -> Any {
         guard let array = possibleArray as? [Any] else {
             return possibleArray
         }
