@@ -295,10 +295,9 @@ public final class TransitDecoder {
         }
 
         mutating func decode<T>(_ type: T.Type) throws -> T where T : Decodable {
+            defer { currentIndex += 1 }
             let untyped = arrayOfValues[currentIndex]
             let decoder = try _TransitDecoder(json: untyped, codingPath: codingPath + [IntCodingKey(intValue: currentIndex)!], handlers: decoder.handlers)
-
-            currentIndex += 1
 
             return try T(from: decoder)
         }
@@ -326,7 +325,6 @@ public final class TransitDecoder {
         func decodeNil() -> Bool {
             do {
                 _ = try currentValue() as NSNull
-
                 return true
             } catch {
                 return false
