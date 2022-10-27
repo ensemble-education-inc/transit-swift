@@ -1,17 +1,5 @@
 import Foundation
 
-let defaultHandlers: [Handler] = [
-    CachingHandler(),
-    MapHandler(),
-    SetHandler(),
-    ScalarHandler(),
-    ListHandler(),
-    MillisecondsSince1970Handler(),
-    ISO8601DateHandler(),
-    URIHandler(),
-    UUIDHandler(),
-]
-
 public final class TransitDecoder {
     enum TransitDecoderError: Error {
         case notImplemented
