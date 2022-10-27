@@ -325,9 +325,9 @@ public final class TransitDecoder {
 
         func decodeNil() -> Bool {
             do {
-                let value = try currentValue() as Any
+                _ = try currentValue() as NSNull
 
-                return type(of: value) == NSNull.self
+                return true
             } catch {
                 return false
             }
