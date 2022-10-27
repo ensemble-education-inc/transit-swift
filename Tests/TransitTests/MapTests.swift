@@ -151,7 +151,7 @@ final class MapTests: XCTestCase {
     func testMapSimple() throws {
         // map_simple.json
         let data = """
-            ["^ ","~:c",3,"~:b",2,"~:a",1]
+        ["^ ","~:c",3,"~:b",2,"~:a",1]
         """
             .data(using: .utf8)!
 
@@ -166,6 +166,11 @@ final class MapTests: XCTestCase {
         XCTAssertEqual(decoded.c, 3)
         XCTAssertEqual(decoded.b, 2)
         XCTAssertEqual(decoded.a, 1)
+
+        let encoded = try TransitEncoder().encode(decoded)
+
+        print(String(decoding: encoded, as: UTF8.self))
+        XCTAssertEqual(encoded, data)
     }
 
     func testMapsFourCharKeywordKeys() throws {
