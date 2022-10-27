@@ -15,6 +15,9 @@ public struct UUIDHandler: Handler {
         guard string.starts(with: "~u") else {
             return value
         }
-        return String(string.dropFirst(2))
+        guard let uuid = UUID(uuidString: String(string.dropFirst(2))) else {
+            return value
+        }
+        return uuid
     }
 }

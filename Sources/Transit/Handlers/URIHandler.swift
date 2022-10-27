@@ -15,7 +15,9 @@ public struct URIHandler: Handler {
         guard string.starts(with: "~r") else {
             return value
         }
-        // what if we replaced this with the structure that Foundation.URL expects so that you could transparently decode them
-        return String(string.dropFirst(2))
+        guard let url = URL(string: String(string.dropFirst(2))) else {
+            return value
+        }
+        return url
     }
 }

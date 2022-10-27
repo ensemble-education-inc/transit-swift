@@ -18,7 +18,7 @@ public struct MillisecondsSince1970Handler: Handler {
         guard let double = Double(string.dropFirst(2)) else {
             return value
         }
-        return Date(timeIntervalSince1970: double / 1000).timeIntervalSinceReferenceDate
+        return Date(timeIntervalSince1970: double / 1000)
     }
 }
 
@@ -40,6 +40,6 @@ public struct ISO8601DateHandler: Handler {
         guard let date = Self.iso8601Formatter.date(from: String(string.dropFirst(2))) else {
             return value
         }
-        return date.timeIntervalSinceReferenceDate
+        return date
     }
 }

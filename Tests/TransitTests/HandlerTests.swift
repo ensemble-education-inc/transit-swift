@@ -111,11 +111,11 @@ final class HandlerTests: XCTestCase {
         .data(using: .utf8)! // not parsing: "~rhttp://www.詹姆斯.com/"
 
         struct Result: Codable {
-            let uri: URI
+            let uri: URL
         }
         let decoded = try TransitDecoder().decode(Result.self, from: data)
 
-        XCTAssertEqual(decoded.uri.url, URL(string: "http://example.com"))
+        XCTAssertEqual(decoded.uri, URL(string: "http://example.com"))
     }
 
     func testURIs() throws {
@@ -125,7 +125,7 @@ final class HandlerTests: XCTestCase {
         """
         .data(using: .utf8)! // not parsing: "~rhttp://www.詹姆斯.com/"
 
-        let decoded = try TransitDecoder().decode([URI].self, from: data)
+        let decoded = try TransitDecoder().decode([URL].self, from: data)
 
         let expectedURLs = [
             URL(string: "http://example.com"),
@@ -134,9 +134,9 @@ final class HandlerTests: XCTestCase {
 //            URL(string: "http://www.詹姆斯.com/"),
         ].compactMap({ $0 })
 
-        XCTAssertEqual(decoded[0].url, expectedURLs[0])
-        XCTAssertEqual(decoded[1].url, expectedURLs[1])
-        XCTAssertEqual(decoded[2].url, expectedURLs[2])
+        XCTAssertEqual(decoded[0], expectedURLs[0])
+        XCTAssertEqual(decoded[1], expectedURLs[1])
+        XCTAssertEqual(decoded[2], expectedURLs[2])
     }
 
     func testUUIDMap() throws {
