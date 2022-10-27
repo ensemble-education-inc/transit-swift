@@ -28,7 +28,14 @@ public final class TransitDecoder {
     }
 
     public func decode<T: Decodable>(_ t: T.Type, from data: Data) throws -> T {
-        try T(from: _TransitDecoder(data: data, codingPath: [], handlers: registeredHandlers))
+        let encoder = try _TransitDecoder(data: data, codingPath: [], handlers: registeredHandlers)
+        if let value = encoder.json as? T {
+            // If we're decoding a single value and we already have the right value,
+            // (because, e.g., it's been processed by a Handler already), just return that value
+            return value
+        } else {
+            return try T(from: encoder)
+        }
     }
 
     final class _TransitDecoder: Decoder {
@@ -163,6 +170,9 @@ public final class TransitDecoder {
         }
 
         func decode<T>(_ type: T.Type, forKey key: Key) throws -> T where T : Decodable {
+            do {
+                return try value(forKey: key) as T
+            } catch { }
             let dict = try value(forKey: key) as Any
             let decoder = try _TransitDecoder(json: dict, codingPath: decoder.codingPath + [key], handlers: decoder.handlers)
             return try T(from: decoder)
@@ -297,6 +307,9 @@ public final class TransitDecoder {
         mutating func decode<T>(_ type: T.Type) throws -> T where T : Decodable {
             defer { currentIndex += 1 }
             let untyped = arrayOfValues[currentIndex]
+            if let typed = untyped as? T {
+                return typed
+            }
             let decoder = try _TransitDecoder(json: untyped, codingPath: codingPath + [IntCodingKey(intValue: currentIndex)!], handlers: decoder.handlers)
 
             return try T(from: decoder)
