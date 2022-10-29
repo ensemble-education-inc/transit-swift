@@ -23,7 +23,8 @@ public final class TransitEncoder {
     }
 
     public func encode<T: Encodable>(_ value: T) throws -> Data {
-        let encoder =  _TransitEncoder(value: value, codingPath: [], handlers: registeredHandlers)
+        let context = Context(registeredHandlers: registeredHandlers, transformer: { context, value in try prepareForEncode(value: value, context: &context) })
+        let encoder =  _TransitEncoder(value: value, codingPath: [], context: context)
         try value.encode(to: encoder)
         return try encoder.makeData()
     }
@@ -32,14 +33,14 @@ public final class TransitEncoder {
 
         let value: T
         let codingPath: [CodingKey]
+        var context: Context
         var userInfo: [CodingUserInfoKey : Any] = [:]
-        let handlers: [Handler]
         var array: [Any] = []
 
-        init(value: T, codingPath: [CodingKey], handlers: [Handler]) {
+        init(value: T, codingPath: [CodingKey], context: Context) {
             self.value = value
             self.codingPath = codingPath
-            self.handlers = handlers
+            self.context = context
         }
 
         func makeData() throws -> Data {
@@ -69,79 +70,82 @@ public final class TransitEncoder {
                 fatalError()
             }
 
-            mutating func add(key: String, value: Any) {
+            mutating func add(key: String, value: Any) throws {
                 if encoder.array.isEmpty {
                     encoder.array.append("^ ")
                 }
                 encoder.array.append(Keyword(keyword: key).encoded)
-                encoder.array.append(value)
+                let processedValue = try encoder.context.transform(value: value)
+                encoder.array.append(processedValue)
             }
 
             mutating func encodeNil(forKey key: Key) throws {
-                add(key: key.stringValue, value: NSNull())
+                try add(key: key.stringValue, value: NSNull())
             }
 
             mutating func encode(_ value: Bool, forKey key: Key) throws {
-                add(key: key.stringValue, value: value)
+                try add(key: key.stringValue, value: value)
 
             }
 
             mutating func encode(_ value: String, forKey key: Key) throws {
-                add(key: key.stringValue, value: value)
+                try add(key: key.stringValue, value: value)
             }
 
             mutating func encode(_ value: Double, forKey key: Key) throws {
-                add(key: key.stringValue, value: value)
+                try add(key: key.stringValue, value: value)
             }
 
             mutating func encode(_ value: Float, forKey key: Key) throws {
-                add(key: key.stringValue, value: value)
+                try add(key: key.stringValue, value: value)
             }
 
             mutating func encode(_ value: Int, forKey key: Key) throws {
-                add(key: key.stringValue, value: value)
+                try add(key: key.stringValue, value: value)
             }
 
             mutating func encode(_ value: Int8, forKey key: Key) throws {
-                add(key: key.stringValue, value: value)
+                try add(key: key.stringValue, value: value)
             }
 
             mutating func encode(_ value: Int16, forKey key: Key) throws {
-                add(key: key.stringValue, value: value)
+                try add(key: key.stringValue, value: value)
             }
 
             mutating func encode(_ value: Int32, forKey key: Key) throws {
-                add(key: key.stringValue, value: value)
+                try add(key: key.stringValue, value: value)
             }
 
             mutating func encode(_ value: Int64, forKey key: Key) throws {
-                add(key: key.stringValue, value: value)
+                try add(key: key.stringValue, value: value)
             }
 
             mutating func encode(_ value: UInt, forKey key: Key) throws {
-                add(key: key.stringValue, value: value)
+                try add(key: key.stringValue, value: value)
             }
 
             mutating func encode(_ value: UInt8, forKey key: Key) throws {
-                add(key: key.stringValue, value: value)
+                try add(key: key.stringValue, value: value)
             }
 
             mutating func encode(_ value: UInt16, forKey key: Key) throws {
-                add(key: key.stringValue, value: value)
+                try add(key: key.stringValue, value: value)
             }
 
             mutating func encode(_ value: UInt32, forKey key: Key) throws {
-                add(key: key.stringValue, value: value)
+                try add(key: key.stringValue, value: value)
             }
 
             mutating func encode(_ value: UInt64, forKey key: Key) throws {
-                add(key: key.stringValue, value: value)
+                try add(key: key.stringValue, value: value)
             }
 
             mutating func encode<T>(_ value: T, forKey key: Key) throws where T : Encodable {
-                let encoder = _TransitEncoder<T>(value: value, codingPath: encoder.codingPath + [key], handlers: encoder.handlers)
-                try value.encode(to: encoder)
-                add(key: key.stringValue, value: encoder.array)
+//                let encoder = _TransitEncoder<T>(value: value, codingPath: encoder.codingPath + [key], context: encoder.context)
+//                try value.encode(to: encoder)
+//                try add(key: key.stringValue, value: encoder.array)
+                let preparedValue = try encoder.context.transform(value: value)
+                try add(key: key.stringValue, value: preparedValue)
             }
 
             mutating func nestedContainer<NestedKey>(keyedBy keyType: NestedKey.Type, forKey key: Key) -> KeyedEncodingContainer<NestedKey> where NestedKey : CodingKey {
@@ -240,9 +244,11 @@ public final class TransitEncoder {
             }
 
             mutating func encode<T>(_ value: T) throws where T : Encodable {
-                let encoder = _TransitEncoder<T>(value: value, codingPath: codingPath + [IntCodingKey(intValue: count)].compactMap({ $0 }), handlers: encoder.handlers)
-                try value.encode(to: encoder)
-                add(encoder.array)
+//                let encoder = _TransitEncoder<T>(value: value, codingPath: codingPath + [IntCodingKey(intValue: count)].compactMap({ $0 }), context: encoder.context)
+//                try value.encode(to: encoder)
+//                add(encoder.array)
+                let preparedValue = try encoder.context.transform(value: value)
+                add(preparedValue)
             }
 
             mutating func encode(_ value: Bool) throws {

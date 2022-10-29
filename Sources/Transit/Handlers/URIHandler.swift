@@ -20,4 +20,8 @@ public struct URIHandler: Handler {
         }
         return url
     }
+
+    public func prepareForEncode(value: Any, context: inout Context) throws -> Any {
+        return value
+    }
 }

@@ -14,7 +14,7 @@ final class DateTests: XCTestCase {
     func testSimpleMillisecondsSince1970Date() throws {
         // date_in_map.json
         let data = """
-            ["^ ", "~:date", "~m946728000000"]
+        ["^ ","~:date","~m946728000000"]
         """
             .data(using: .utf8)!
 
@@ -25,6 +25,10 @@ final class DateTests: XCTestCase {
         let decoded = try TransitDecoder().decode(Result.self, from: data)
 
         XCTAssertEqual(decoded.date, Date(timeIntervalSince1970: 946728000))
+
+        let encoded = try TransitEncoder().encode(decoded)
+
+        XCTAssertEqual(encoded, data)
     }
 
     func testSimpleISO8601Date() throws {
