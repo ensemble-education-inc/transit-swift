@@ -61,8 +61,6 @@ public final class TransitEncoder {
         }
 
         struct _KeyedContainer<Key: CodingKey>: KeyedEncodingContainerProtocol {
-            var array: [Any] = []
-
             var codingPath: [CodingKey]
 
             var encoder: _TransitEncoder
