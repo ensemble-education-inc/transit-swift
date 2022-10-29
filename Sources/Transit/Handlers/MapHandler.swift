@@ -19,6 +19,10 @@ struct CachingHandler: Handler {
         }
         return value
     }
+
+    public func prepareForEncode(value: Any, context: inout Context) throws -> Any {
+        return value
+    }
 }
 
 struct MapHandler: Handler {
@@ -45,4 +49,7 @@ struct MapHandler: Handler {
         return dict
     }
 
+    public func prepareForEncode(value: Any, context: inout Context) throws -> Any {
+        return value
+    }
 }

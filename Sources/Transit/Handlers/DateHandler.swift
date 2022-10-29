@@ -20,6 +20,13 @@ public struct MillisecondsSince1970Handler: Handler {
         }
         return Date(timeIntervalSince1970: double / 1000)
     }
+
+    public func prepareForEncode(value: Any, context: inout Context) throws -> Any {
+        guard let date = value as? Date else {
+            return value
+        }
+        return "~m\(Int(date.timeIntervalSince1970*1000))"
+    }
 }
 
 public struct ISO8601DateHandler: Handler {
@@ -41,5 +48,9 @@ public struct ISO8601DateHandler: Handler {
             return value
         }
         return date
+    }
+    
+    public func prepareForEncode(value: Any, context: inout Context) throws -> Any {
+        return value
     }
 }

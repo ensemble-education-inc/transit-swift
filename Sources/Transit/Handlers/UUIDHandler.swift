@@ -20,4 +20,8 @@ public struct UUIDHandler: Handler {
         }
         return uuid
     }
+
+    public func prepareForEncode(value: Any, context: inout Context) throws -> Any {
+        return value
+    }
 }

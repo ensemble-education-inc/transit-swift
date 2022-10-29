@@ -19,7 +19,6 @@ func prepareForDecode(value: Any, context: inout Context) throws -> Any {
         try handler.prepareForDecode(value: array, context: &context)
     })
 
-
     if let array2 = value as? [Any] {
         return try array2.map({ item in
             return try prepareForDecode(value: item, context: &context)
@@ -27,6 +26,19 @@ func prepareForDecode(value: Any, context: inout Context) throws -> Any {
     } else {
         return value
     }
+}
+
+//func prepareForEncode(value: Any, withRegisteredHandlers registeredHandlers: [Handler]) throws -> Any {
+//
+//    var context = Context(registeredHandlers: registeredHandlers, transformer: { context, value in try prepareForEncode(value: value, context: &context) })
+//
+//    return try context.transform(value: value)
+//}
+
+func prepareForEncode(value: Any, context: inout Context) throws -> Any {
+    return try context.registeredHandlers.reduce(value, { array, handler in
+        try handler.prepareForEncode(value: array, context: &context)
+    })
 }
 
 public struct Context {
@@ -90,5 +102,6 @@ public struct Context {
 
 public protocol Handler {
     func prepareForDecode(value: Any, context: inout Context) throws -> Any
+    func prepareForEncode(value: Any, context: inout Context) throws -> Any
 }
 

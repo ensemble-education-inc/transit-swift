@@ -17,4 +17,8 @@ public struct ScalarHandler: Handler {
         }
         return array[1]
     }
+
+    public func prepareForEncode(value: Any, context: inout Context) throws -> Any {
+        return value
+    }
 }

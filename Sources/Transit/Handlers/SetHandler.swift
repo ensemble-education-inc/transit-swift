@@ -18,4 +18,8 @@ public struct SetHandler: Handler {
         _ = try context.transform(value: array[0])
         return array[1]
     }
+
+    public func prepareForEncode(value: Any, context: inout Context) throws -> Any {
+        return value
+    }
 }
