@@ -28,7 +28,7 @@ final class DateTests: XCTestCase {
 
         let encoded = try TransitEncoder().encode(decoded)
 
-        XCTAssertEqual(encoded, data)
+        XCTAssertDataEquals(encoded, data)
     }
 
     func testSimpleISO8601Date() throws {
