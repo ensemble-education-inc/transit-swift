@@ -46,7 +46,7 @@ final class DateTests: XCTestCase {
     }
 
     func testSingleDate() throws {
-        // one_date.verbose.json
+        // one_date.json
         let data = """
         ["~#'","~m946728000000"]
         """
