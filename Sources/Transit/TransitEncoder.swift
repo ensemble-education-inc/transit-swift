@@ -31,11 +31,51 @@ public final class TransitEncoder {
 
     final class _TransitEncoder<T: Encodable>: Encoder {
 
+        enum Content {
+            case singleValue(Any)
+            case array([Any])
+
+            init() {
+                self = .array([])
+            }
+
+            var value: Any {
+                switch self {
+                case let .singleValue(value):
+                    return value
+                case let .array(array):
+                    return array
+                }
+            }
+
+            var isEmpty: Bool {
+                count == 0
+            }
+
+            var count: Int {
+                switch self {
+                case .singleValue:
+                    return 1
+                case let .array(array):
+                    return array.count
+                }
+            }
+
+            mutating func append(_ value: Any) {
+                switch self {
+                case .singleValue(_):
+                    self = .singleValue(value)
+                case let .array(array):
+                    self = .array(array + [value])
+                }
+            }
+        }
+        
         let value: T
         let codingPath: [CodingKey]
         var context: Context
         var userInfo: [CodingUserInfoKey : Any] = [:]
-        var array: [Any] = []
+        var content: Content = .init()
 
         init(value: T, codingPath: [CodingKey], context: Context) {
             self.value = value
@@ -44,7 +84,12 @@ public final class TransitEncoder {
         }
 
         func makeData() throws -> Data {
-            try JSONSerialization.data(withJSONObject: array)
+            switch content {
+            case let .singleValue(value):
+                return try JSONSerialization.data(withJSONObject: ["~#'", value])
+            case let .array(array):
+                return try JSONSerialization.data(withJSONObject: array)
+            }
         }
 
         func container<Key>(keyedBy type: Key.Type) -> KeyedEncodingContainer<Key> where Key : CodingKey {
@@ -71,12 +116,12 @@ public final class TransitEncoder {
             }
 
             mutating func add(key: String, value: Any) throws {
-                if encoder.array.isEmpty {
-                    encoder.array.append("^ ")
+                if encoder.content.isEmpty {
+                    encoder.content.append("^ ")
                 }
-                encoder.array.append(Keyword(keyword: key).encoded)
+                encoder.content.append(Keyword(keyword: key).encoded)
                 let processedValue = try encoder.context.transform(value: value)
-                encoder.array.append(processedValue)
+                encoder.content.append(processedValue)
             }
 
             mutating func encodeNil(forKey key: Key) throws {
@@ -168,11 +213,11 @@ public final class TransitEncoder {
             var encoder: _TransitEncoder
 
             var count: Int {
-                encoder.array.count
+                encoder.content.count
             }
 
             mutating func add(_ value: Any) {
-                encoder.array.append(value)
+                encoder.content.append(value)
             }
 
             mutating func encodeNil() throws {
@@ -261,68 +306,73 @@ public final class TransitEncoder {
 
             var encoder: _TransitEncoder
 
+            func setValue(_ value: Any) throws {
+                encoder.content = .singleValue(value)
+            }
+
             mutating func encodeNil() throws {
-                encoder.array = [NSNull()]
+                try setValue(NSNull())
             }
 
             mutating func encode(_ value: Bool) throws {
-                encoder.array = [value]
+                try setValue(value)
             }
 
             mutating func encode(_ value: String) throws {
-                encoder.array = [value]
+                try setValue(value)
             }
 
             mutating func encode(_ value: Double) throws {
-                encoder.array = [value]
+                try setValue(value)
             }
 
             mutating func encode(_ value: Float) throws {
-                encoder.array = [value]
+                try setValue(value)
             }
 
             mutating func encode(_ value: Int) throws {
-                encoder.array = [value]
+                try setValue(value)
             }
 
             mutating func encode(_ value: Int8) throws {
-                encoder.array = [value]
+                try setValue(value)
             }
 
             mutating func encode(_ value: Int16) throws {
-                encoder.array = [value]
+                try setValue(value)
             }
 
             mutating func encode(_ value: Int32) throws {
-                encoder.array = [value]
+                try setValue(value)
             }
 
             mutating func encode(_ value: Int64) throws {
-                encoder.array = [value]
+                try setValue(value)
             }
 
             mutating func encode(_ value: UInt) throws {
-                encoder.array = [value]
+                try setValue(value)
             }
 
             mutating func encode(_ value: UInt8) throws {
-                encoder.array = [value]
+                try setValue(value)
             }
 
             mutating func encode(_ value: UInt16) throws {
-                encoder.array = [value]
+                try setValue(value)
             }
 
             mutating func encode(_ value: UInt32) throws {
-                encoder.array = [value]
+                try setValue(value)
             }
 
             mutating func encode(_ value: UInt64) throws {
-                encoder.array = [value]
+                try setValue(value)
             }
 
             mutating func encode<T>(_ value: T) throws where T : Encodable {
-                encoder.array = [value]
+                let processedValue = try encoder.context.transform(value: value)
+                try setValue(processedValue)
             }
         }
     }
