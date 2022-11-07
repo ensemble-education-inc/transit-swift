@@ -22,6 +22,9 @@ public struct UUIDHandler: Handler {
     }
 
     public func prepareForEncode(value: Any, context: inout Context) throws -> Any {
-        return value
+        guard let uuid = value as? UUID else {
+            return value
+        }
+        return "~u\(uuid)"
     }
 }
