@@ -113,7 +113,7 @@ final class HandlerTests: XCTestCase {
     func testURIMap() throws {
         // uri_map.json
         let data = """
-        ["^ ", "~:uri", "~rhttp://example.com"]
+        ["^ ","~:uri","~rhttp://example.com"]
         """
         .data(using: .utf8)! // not parsing: "~rhttp://www.詹姆斯.com/"
 
@@ -123,6 +123,10 @@ final class HandlerTests: XCTestCase {
         let decoded = try TransitDecoder().decode(Result.self, from: data)
 
         XCTAssertEqual(decoded.uri, URL(string: "http://example.com"))
+
+        let encoded = try TransitEncoder(outputFormatting: .withoutEscapingSlashes).encode(decoded)
+
+        XCTAssertDataEquals(encoded, data)
     }
 
     func testURIs() throws {
