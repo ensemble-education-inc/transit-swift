@@ -143,7 +143,7 @@ final class HandlerTests: XCTestCase {
         // uri_map.json
         let uuid = UUID().uuidString
         let data = """
-        ["^ ", "~:uuid", "~u\(uuid)"]
+        ["^ ","~:uuid","~u\(uuid)"]
         """
         .data(using: .utf8)!
 
@@ -153,6 +153,10 @@ final class HandlerTests: XCTestCase {
         let decoded = try TransitDecoder().decode(Result.self, from: data)
 
         XCTAssertEqual(decoded.uuid.uuidString, uuid)
+
+        let encoded = try TransitEncoder().encode(decoded)
+
+        XCTAssertDataEquals(encoded, data)
     }
 
     func testUUIDs() throws {
