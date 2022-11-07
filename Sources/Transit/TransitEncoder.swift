@@ -14,12 +14,11 @@ public final class TransitEncoder {
 
     let registeredHandlers: [Handler]
 
-    public init(handlers: [Handler]) {
-        registeredHandlers = handlers
-    }
+    let outputFormatting: JSONEncoder.OutputFormatting
 
-    public init() {
-        registeredHandlers = defaultHandlers
+    public init(handlers: [Handler]? = nil, outputFormatting: JSONEncoder.OutputFormatting = []) {
+        registeredHandlers = handlers ?? defaultHandlers
+        self.outputFormatting = outputFormatting
     }
 
     public func encode<T: Encodable>(_ value: T) throws -> Data {
@@ -30,7 +29,7 @@ public final class TransitEncoder {
         } else {
             try value.encode(to: encoder)
         }
-        return try encoder.makeData()
+        return try encoder.makeData(outputFormatting: outputFormatting)
     }
 
     final class _TransitEncoder<T: Encodable>: Encoder {
@@ -87,14 +86,18 @@ public final class TransitEncoder {
             self.context = context
         }
 
-        func makeData() throws -> Data {
+        func makeData(outputFormatting: JSONEncoder.OutputFormatting) throws -> Data {
+            var options: JSONSerialization.WritingOptions = []
+            if outputFormatting.contains(.withoutEscapingSlashes) {
+                options.insert(.withoutEscapingSlashes)
+            }
             switch content {
             case let .singleValue(value) where (value as? BuiltInType)?.isScalar ?? false:
-                return try JSONSerialization.data(withJSONObject: ["~#'", value])
+                return try JSONSerialization.data(withJSONObject: ["~#'", value], options: options)
             case let .singleValue(value):
-                return try JSONSerialization.data(withJSONObject: value)
+                return try JSONSerialization.data(withJSONObject: value, options: options)
             case let .array(array):
-                return try JSONSerialization.data(withJSONObject: array)
+                return try JSONSerialization.data(withJSONObject: array, options: options)
             }
         }
 
