@@ -10,3 +10,5 @@ import Foundation
 protocol BuiltInType { }
 
 extension Date: BuiltInType { }
+
+extension UUID: BuiltInType { }

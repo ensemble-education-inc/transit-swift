@@ -158,7 +158,7 @@ final class HandlerTests: XCTestCase {
     func testUUIDs() throws {
         // uuids.json
         let data = """
-            ["~u5a2cbea3-e8c6-428b-b525-21239370dd55","~ud1dc64fa-da79-444b-9fa4-d4412f427289","~u501a978e-3a3e-4060-b3be-1cf2bd4b1a38","~ub3ba141a-a776-48e4-9fae-a28ea8571f58"]
+        ["~u5A2CBEA3-E8C6-428B-B525-21239370DD55","~uD1DC64FA-DA79-444B-9FA4-D4412F427289","~u501A978E-3A3E-4060-B3BE-1CF2BD4B1A38","~uB3BA141A-A776-48E4-9FAE-A28EA8571F58"]
         """
         .data(using: .utf8)!
 
@@ -175,7 +175,9 @@ final class HandlerTests: XCTestCase {
         XCTAssertEqual(decoded[1], expectedUUIDs[1])
         XCTAssertEqual(decoded[2], expectedUUIDs[2])
         XCTAssertEqual(decoded[3], expectedUUIDs[3])
+
+        let encoded = try TransitEncoder().encode(decoded)
+
+        XCTAssertDataEquals(encoded, data)
     }
-
-
 }
