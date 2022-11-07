@@ -7,8 +7,19 @@
 
 import Foundation
 
-protocol BuiltInType { }
+protocol BuiltInType {
+    var isScalar: Bool { get }
+}
 
-extension Date: BuiltInType { }
+extension Date: BuiltInType {
+    var isScalar: Bool { true }
+}
 
-extension UUID: BuiltInType { }
+extension String: BuiltInType {
+    var isScalar: Bool { true }
+}
+
+extension UUID: BuiltInType {
+    var isScalar: Bool { true }
+}
+
