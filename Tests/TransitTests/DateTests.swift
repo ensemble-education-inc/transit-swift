@@ -55,5 +55,9 @@ final class DateTests: XCTestCase {
         let decoded = try TransitDecoder().decode(Date.self, from: data)
 
         XCTAssertEqual(decoded, Date(timeIntervalSince1970: 946728000))
+
+        let encoded = try TransitEncoder().encode(decoded)
+
+        XCTAssertDataEquals(encoded, data)
     }
 }
