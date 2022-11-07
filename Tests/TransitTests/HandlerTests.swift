@@ -25,7 +25,7 @@ final class HandlerTests: XCTestCase {
 
         let encoded = try TransitEncoder().encode(decoded)
 
-        // redecode because the set items' order may be different than what we
+        // redecode because the set items' order may be different than what we expect
         let redecoded = try TransitDecoder().decode(Set<Int>.self, from: encoded)
 
         XCTAssertEqual(redecoded, Set([1,2,3]))
