@@ -23,6 +23,10 @@ extension UUID: BuiltInType {
     var isScalar: Bool { true }
 }
 
+extension URL: BuiltInType {
+    var isScalar: Bool { true }
+}
+
 extension Set: BuiltInType {
     var isScalar: Bool { false }
 }

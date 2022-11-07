@@ -22,6 +22,9 @@ public struct URIHandler: Handler {
     }
 
     public func prepareForEncode(value: Any, context: inout Context) throws -> Any {
-        return value
+        guard let url = value as? URL else {
+            return value
+        }
+        return "~r\(url.absoluteString)"
     }
 }

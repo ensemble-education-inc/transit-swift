@@ -144,6 +144,10 @@ final class HandlerTests: XCTestCase {
         XCTAssertEqual(decoded[0], expectedURLs[0])
         XCTAssertEqual(decoded[1], expectedURLs[1])
         XCTAssertEqual(decoded[2], expectedURLs[2])
+
+        let encoded = try TransitEncoder(outputFormatting: .withoutEscapingSlashes).encode(decoded)
+
+        XCTAssertDataEquals(encoded, data)
     }
 
     func testUUIDMap() throws {
