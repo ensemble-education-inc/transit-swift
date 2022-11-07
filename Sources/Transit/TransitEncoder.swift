@@ -89,8 +89,10 @@ public final class TransitEncoder {
 
         func makeData() throws -> Data {
             switch content {
-            case let .singleValue(value):
+            case let .singleValue(value) where (value as? BuiltInType)?.isScalar ?? false:
                 return try JSONSerialization.data(withJSONObject: ["~#'", value])
+            case let .singleValue(value):
+                return try JSONSerialization.data(withJSONObject: value)
             case let .array(array):
                 return try JSONSerialization.data(withJSONObject: array)
             }
