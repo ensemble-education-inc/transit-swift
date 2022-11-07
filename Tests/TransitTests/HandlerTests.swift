@@ -22,6 +22,13 @@ final class HandlerTests: XCTestCase {
         let decoded = try TransitDecoder().decode(Set<Int>.self, from: data)
 
         XCTAssertEqual(decoded, Set([1,2,3]))
+
+        let encoded = try TransitEncoder().encode(decoded)
+
+        // redecode because the set items' order may be different than what we
+        let redecoded = try TransitDecoder().decode(Set<Int>.self, from: encoded)
+
+        XCTAssertEqual(redecoded, Set([1,2,3]))
     }
 
     func testSetEmpty() throws {

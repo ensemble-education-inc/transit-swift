@@ -20,6 +20,10 @@ public struct SetHandler: Handler {
     }
 
     public func prepareForEncode(value: Any, context: inout Context) throws -> Any {
-        return value
+        guard let set = value as? Set<AnyHashable> else {
+            return value
+        }
+
+        return ["~#set", Array(set)]
     }
 }
