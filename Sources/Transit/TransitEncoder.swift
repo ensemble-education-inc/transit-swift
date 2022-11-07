@@ -23,9 +23,13 @@ public final class TransitEncoder {
     }
 
     public func encode<T: Encodable>(_ value: T) throws -> Data {
-        let context = Context(registeredHandlers: registeredHandlers, transformer: { context, value in try prepareForEncode(value: value, context: &context) })
+        var context = Context(registeredHandlers: registeredHandlers, transformer: { context, value in try prepareForEncode(value: value, context: &context) })
         let encoder =  _TransitEncoder(value: value, codingPath: [], context: context)
-        try value.encode(to: encoder)
+        if value is BuiltInType {
+            try encoder.content = .singleValue(context.transform(value: value))
+        } else {
+            try value.encode(to: encoder)
+        }
         return try encoder.makeData()
     }
 
