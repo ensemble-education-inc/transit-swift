@@ -193,6 +193,9 @@ final class MapTests: XCTestCase {
         XCTAssertEqual(decoded[2].bbbb, 6)
         XCTAssertEqual(decoded[2].aaaa, 5)
 
+        let encoded = try TransitEncoder().encode(decoded)
+
+        XCTAssertDataEquals(encoded, data)
     }
 
 }
