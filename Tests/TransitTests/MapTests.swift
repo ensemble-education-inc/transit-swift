@@ -169,7 +169,6 @@ final class MapTests: XCTestCase {
 
         let encoded = try TransitEncoder().encode(decoded)
 
-        print(String(decoding: encoded, as: UTF8.self))
         XCTAssertEqual(encoded, data)
     }
 
