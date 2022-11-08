@@ -58,6 +58,9 @@ final class MapTests: XCTestCase {
         XCTAssertEqual(decoded.s.key0008, 8)
         XCTAssertEqual(decoded.s.key0009, 9)
 
+        let encoded = try TransitEncoder().encode(decoded)
+
+        XCTAssertEqual(encoded, data)
     }
 
     func testMap10Items() throws {
@@ -92,6 +95,11 @@ final class MapTests: XCTestCase {
         XCTAssertEqual(decoded.key0007, 7)
         XCTAssertEqual(decoded.key0008, 8)
         XCTAssertEqual(decoded.key0009, 9)
+
+        let encoded = try TransitEncoder().encode(decoded)
+
+        XCTAssertEqual(encoded, data)
+
     }
 
     func testMapMixed() throws {
@@ -112,6 +120,11 @@ final class MapTests: XCTestCase {
         XCTAssertEqual(decoded.c, true)
         XCTAssertEqual(decoded.b, "a string")
         XCTAssertEqual(decoded.a, 1)
+
+        let encoded = try TransitEncoder().encode(decoded)
+
+        XCTAssertEqual(encoded, data)
+
     }
 
     func testMapNested() throws {
@@ -146,6 +159,11 @@ final class MapTests: XCTestCase {
         XCTAssertEqual(decoded.simple.c, 3)
         XCTAssertEqual(decoded.simple.b, 2)
         XCTAssertEqual(decoded.simple.a, 1)
+
+        let encoded = try TransitEncoder().encode(decoded)
+
+        XCTAssertEqual(encoded, data)
+
     }
 
     func testMapSimple() throws {
