@@ -8,25 +8,45 @@
 import Foundation
 
 protocol BuiltInType {
-    var isScalar: Bool { get }
+    static var isScalar: Bool { get }
+}
+
+extension BuiltInType {
+    var isScalar: Bool {
+        Self.isScalar
+    }
 }
 
 extension Date: BuiltInType {
-    var isScalar: Bool { true }
+    static var isScalar: Bool { true }
 }
 
 extension String: BuiltInType {
-    var isScalar: Bool { true }
+    static var isScalar: Bool { true }
+}
+
+extension Int: BuiltInType {
+    static var isScalar: Bool { true }
+}
+
+extension Bool: BuiltInType {
+    static var isScalar: Bool { true }
 }
 
 extension UUID: BuiltInType {
-    var isScalar: Bool { true }
+    static var isScalar: Bool { true }
 }
 
 extension URL: BuiltInType {
-    var isScalar: Bool { true }
+    static var isScalar: Bool { true }
 }
 
 extension Set: BuiltInType {
-    var isScalar: Bool { false }
+    static var isScalar: Bool { false }
+}
+
+extension Optional: BuiltInType where Wrapped: BuiltInType {
+    static var isScalar: Bool {
+        Wrapped.isScalar
+    }
 }
