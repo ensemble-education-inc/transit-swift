@@ -21,6 +21,10 @@ final class ScalarTests: XCTestCase {
         let decoded = try TransitDecoder().decode(Bool.self, from: data)
 
         XCTAssertEqual(decoded, false)
+
+        let encoded = try TransitEncoder().encode(decoded)
+
+        XCTAssertDataEquals(encoded, data)
     }
 
     func testOneScalar() throws {
@@ -33,6 +37,10 @@ final class ScalarTests: XCTestCase {
         let decoded = try TransitDecoder().decode(Int.self, from: data)
 
         XCTAssertEqual(decoded, 1)
+
+        let encoded = try TransitEncoder().encode(decoded)
+
+        XCTAssertDataEquals(encoded, data)
     }
 
     func testNullScalar() throws {
@@ -45,5 +53,9 @@ final class ScalarTests: XCTestCase {
         let decoded = try TransitDecoder().decode(Int?.self, from: data)
 
         XCTAssertEqual(decoded, nil)
+
+        let encoded = try TransitEncoder().encode(decoded)
+
+        XCTAssertDataEquals(encoded, data)
     }
 }
