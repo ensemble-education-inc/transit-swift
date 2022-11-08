@@ -41,15 +41,44 @@ func prepareForEncode(value: Any, context: inout Context) throws -> Any {
     })
 }
 
+final class RefArray<Element>: RandomAccessCollection {
+    var array: [Element] = []
+
+    var startIndex: Int { array.startIndex }
+    var endIndex: Int { array.endIndex }
+    subscript(index: Int) -> Element { array[index] }
+    func index(after i: Int) -> Int { array.index(after: i) }
+}
+
 public struct Context {
     let registeredHandlers: [Handler]
-    var keywordCache: [String] = []
+    var keywordCache: RefArray<String> = .init()
     let transformer: (inout Context, Any) throws -> Any
 
     mutating func transform(value: Any) throws -> Any {
         return try self.transformer(&self, value)
     }
 
+    mutating func prepareKeyForEncoding(_ key: String) throws -> String {
+        if let index = keywordCache.firstIndex(of: key) {
+            let lookUpKeyHighBit = index / 44
+            let lookUpKeyLowBit = index % 44
+
+            let lookUpKey: String
+            if lookUpKeyHighBit == 0 {
+                lookUpKey = "\(UnicodeScalar(lookUpKeyLowBit + 48)!)"
+            } else {
+                lookUpKey = "\(UnicodeScalar(lookUpKeyHighBit + 48)!)\(UnicodeScalar(lookUpKeyLowBit + 48)!)"
+            }
+            return "^\(lookUpKey)"
+        } else {
+            let inserted = self.insertInCache(key)
+            let normalized = Keyword(keyword: inserted).encoded
+            return normalized
+        }
+    }
+
+    @discardableResult
     mutating func insertInCache(_ string: String) -> String {
         var keyToUse = string[...]
         if keyToUse.starts(with: "~:") {
@@ -64,7 +93,7 @@ public struct Context {
 
         let sanitized = String(keyToUse)
         if keyToUse.count > 1 {
-            keywordCache.append(sanitized)
+            keywordCache.array.append(sanitized)
         }
         return sanitized
     }

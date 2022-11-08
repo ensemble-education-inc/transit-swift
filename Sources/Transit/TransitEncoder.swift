@@ -128,7 +128,8 @@ public final class TransitEncoder {
                 if encoder.content.isEmpty {
                     encoder.content.append("^ ")
                 }
-                encoder.content.append(Keyword(keyword: key).encoded)
+                let keyword = try encoder.context.prepareKeyForEncoding(key)
+                encoder.content.append(keyword)
                 let processedValue = try encoder.context.transform(value: value)
                 encoder.content.append(processedValue)
             }
@@ -195,11 +196,15 @@ public final class TransitEncoder {
             }
 
             mutating func encode<T>(_ value: T, forKey key: Key) throws where T : Encodable {
-//                let encoder = _TransitEncoder<T>(value: value, codingPath: encoder.codingPath + [key], context: encoder.context)
-//                try value.encode(to: encoder)
-//                try add(key: key.stringValue, value: encoder.array)
-                let preparedValue = try encoder.context.transform(value: value)
-                try add(key: key.stringValue, value: preparedValue)
+                let encoder = _TransitEncoder<T>(value: value, codingPath: encoder.codingPath + [key], context: encoder.context)
+                let cachedKey = try encoder.context.prepareKeyForEncoding(key.stringValue)
+                if value is BuiltInType {
+                    let preparedValue = try encoder.context.transform(value: value)
+                    try add(key: cachedKey, value: preparedValue)
+                } else {
+                    try value.encode(to: encoder)
+                    try add(key: cachedKey, value: encoder.content.value)
+                }
             }
 
             mutating func nestedContainer<NestedKey>(keyedBy keyType: NestedKey.Type, forKey key: Key) -> KeyedEncodingContainer<NestedKey> where NestedKey : CodingKey {
