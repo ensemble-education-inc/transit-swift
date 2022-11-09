@@ -10,22 +10,22 @@ final class NullTests: XCTestCase {
     struct Result: Codable {
         let id: Int
         let username: String?
-    }
 
+        enum CodingKeys: CodingKey {
+            case id
+            case username
+        }
+
+        func encode(to encoder: Encoder) throws {
+            var container: KeyedEncodingContainer<CodingKeys> = encoder.container(keyedBy: CodingKeys.self)
+            try container.encode(self.id, forKey: .id)
+            try container.encode(self.username, forKey: .username) // don't use encodeIfPresent so that you get the null in the final result
+        }
+    }
 
     func testDecodingWithNull() throws {
         let data = """
-          [
-            "^ ",
-            "~:result",
-            [
-              "^ ",
-              "~:id",
-              9,
-              "~:username",
-              null,
-            ]
-          ]
+        ["^ ","~:result",["^ ","~:id",9,"~:username",null]]
         """
             .data(using: .utf8)!
 
@@ -33,6 +33,10 @@ final class NullTests: XCTestCase {
 
         XCTAssertEqual(decoded.result.username, nil)
         XCTAssertEqual(decoded.result.id, 9)
+
+        let encoded = try TransitEncoder().encode(decoded)
+
+        XCTAssertDataEquals(encoded, data)
     }
 
     func testDecodingWithValue() throws {
