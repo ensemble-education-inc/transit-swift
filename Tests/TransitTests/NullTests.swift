@@ -41,17 +41,7 @@ final class NullTests: XCTestCase {
 
     func testDecodingWithValue() throws {
         let data = """
-          [
-            "^ ",
-            "~:result",
-            [
-              "^ ",
-              "~:id",
-              9,
-              "~:username",
-              "soroushk",
-            ]
-          ]
+        ["^ ","~:result",["^ ","~:id",9,"~:username","soroushk"]]
         """
             .data(using: .utf8)!
 
@@ -59,5 +49,10 @@ final class NullTests: XCTestCase {
 
         XCTAssertEqual(decoded.result.username, "soroushk")
         XCTAssertEqual(decoded.result.id, 9)
+
+
+        let encoded = try TransitEncoder().encode(decoded)
+
+        XCTAssertDataEquals(encoded, data)
     }
 }
