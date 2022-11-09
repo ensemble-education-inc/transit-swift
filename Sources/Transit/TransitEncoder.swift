@@ -140,7 +140,6 @@ public final class TransitEncoder {
 
             mutating func encode(_ value: Bool, forKey key: Key) throws {
                 try add(key: key.stringValue, value: value)
-
             }
 
             mutating func encode(_ value: String, forKey key: Key) throws {
