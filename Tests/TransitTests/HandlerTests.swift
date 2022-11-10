@@ -25,6 +25,8 @@ final class HandlerTests: XCTestCase {
 
         let encoded = try TransitEncoder().encode(decoded)
 
+        XCTAssert(String(decoding: encoded, as: UTF8.self).contains("~#set"))
+
         // redecode because the set items' order may be different than what we expect
         let redecoded = try TransitDecoder().decode(Set<Int>.self, from: encoded)
 
