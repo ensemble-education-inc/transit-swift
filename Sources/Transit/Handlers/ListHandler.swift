@@ -20,6 +20,7 @@ public struct ListHandler: Handler {
     }
 
     public func prepareForEncode(value: Any, context: inout Context) throws -> Any {
+        // Lists are not covariant so you can't cast to a List<Any> here
         return value
     }
 }

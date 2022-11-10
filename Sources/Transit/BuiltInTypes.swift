@@ -45,6 +45,11 @@ extension Set: BuiltInType {
     static var isScalar: Bool { false }
 }
 
+// Custom list encoding is handled in List.encode(to:)
+//extension List: BuiltInType {
+//    static var isScalar: Bool { false }
+//}
+
 extension Optional: BuiltInType where Wrapped: BuiltInType {
     static var isScalar: Bool {
         Wrapped.isScalar
