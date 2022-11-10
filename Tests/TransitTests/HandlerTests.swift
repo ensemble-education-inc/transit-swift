@@ -47,7 +47,6 @@ final class HandlerTests: XCTestCase {
         let encoded = try TransitEncoder().encode(decoded)
 
         XCTAssertDataEquals(encoded, data)
-
     }
 
     func testSetInMap() throws {
