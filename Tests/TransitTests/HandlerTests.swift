@@ -82,9 +82,13 @@ final class HandlerTests: XCTestCase {
         """
         .data(using: .utf8)!
 
-        let decoded = try TransitDecoder().decode([Int].self, from: data)
+        let decoded = try TransitDecoder().decode(List<Int>.self, from: data)
 
-        XCTAssertEqual(decoded, [1,3,2])
+        XCTAssertEqual(Array(decoded), [1,3,2])
+
+        let encoded = try TransitEncoder().encode(decoded)
+
+        XCTAssertDataEquals(encoded, data)
     }
 
     func testListEmpty() throws {
@@ -94,9 +98,13 @@ final class HandlerTests: XCTestCase {
         """
         .data(using: .utf8)!
 
-        let decoded = try TransitDecoder().decode([Int].self, from: data)
+        let decoded = try TransitDecoder().decode(List<Int>.self, from: data)
 
-        XCTAssertEqual(decoded, [])
+        XCTAssertEqual(decoded, .init())
+
+        let encoded = try TransitEncoder().encode(decoded)
+
+        XCTAssertDataEquals(encoded, data)
     }
 
     func testListInMap() throws {
@@ -106,13 +114,17 @@ final class HandlerTests: XCTestCase {
         .data(using: .utf8)!
 
         struct Result: Codable {
-            let a_list: [Int]
+            let a_list: List<Int>
             let an_int: Int
         }
         let decoded = try TransitDecoder().decode(Result.self, from: data)
 
-        XCTAssertEqual(decoded.a_list, [1, 3, 2])
+        XCTAssertEqual(Array(decoded.a_list), [1, 3, 2])
         XCTAssertEqual(decoded.an_int, 14)
+
+        let encoded = try TransitEncoder().encode(decoded)
+
+        XCTAssertDataEquals(encoded, data)
     }
 
     func testURIMap() throws {
