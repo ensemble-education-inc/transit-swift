@@ -102,8 +102,10 @@ public final class TransitEncoder {
         }
 
         func container<Key>(keyedBy type: Key.Type) -> KeyedEncodingContainer<Key> where Key : CodingKey {
-            KeyedEncodingContainer(
-                _KeyedContainer<Key>(codingPath: codingPath, encoder: self)
+            var container = _KeyedContainer<Key>(codingPath: codingPath, encoder: self)
+            container.addObjectMarker()
+            return KeyedEncodingContainer(
+                container
             )
         }
 
@@ -124,10 +126,13 @@ public final class TransitEncoder {
                 fatalError()
             }
 
-            mutating func add(key: String, value: Any) throws {
+            mutating func addObjectMarker() {
                 if encoder.content.isEmpty {
                     encoder.content.append("^ ")
                 }
+            }
+
+            mutating func add(key: String, value: Any) throws {
                 let keyword = try encoder.context.prepareKeyForEncoding(key)
                 encoder.content.append(keyword)
                 let processedValue = try encoder.context.transform(value: value)

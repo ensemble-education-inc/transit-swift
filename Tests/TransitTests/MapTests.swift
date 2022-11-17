@@ -11,6 +11,17 @@ import XCTest
 
 final class MapTests: XCTestCase {
 
+    func testEmptyMap() throws {
+        struct Result: Codable {
+
+        }
+
+        let encoder = TransitEncoder()
+        let data = try encoder.encode(Result())
+
+        XCTAssertDataEquals(data, Data(#"["^ "]"#.utf8))
+    }
+
     func testMap10Nested() throws {
         // map_10_nested.json
         let data = """
