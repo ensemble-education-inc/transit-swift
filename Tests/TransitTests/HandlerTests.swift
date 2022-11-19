@@ -11,7 +11,6 @@ import XCTest
 
 final class HandlerTests: XCTestCase {
 
-
     func testSetSimple() throws {
         // set_simple.json
         let data = """
@@ -31,6 +30,45 @@ final class HandlerTests: XCTestCase {
         let redecoded = try TransitDecoder().decode(Set<Int>.self, from: encoded)
 
         XCTAssertEqual(redecoded, Set([1,2,3]))
+    }
+
+    func testSetWithNestedCodableType() throws {
+        // set_simple.json
+        let data = """
+        ["~#set",[1,3,2]]
+        """
+        .data(using: .utf8)!
+
+        struct IntWrapper: Codable, Hashable {
+            let int: Int
+
+            init(int: Int) {
+                self.int = int
+            }
+
+            func encode(to encoder: Encoder) throws {
+                var container = encoder.singleValueContainer()
+                try container.encode(self.int)
+            }
+
+            init(from decoder: Decoder) throws {
+                let container = try decoder.singleValueContainer()
+                self.int = try container.decode(Int.self)
+            }
+        }
+
+        let decoded = try TransitDecoder().decode(Set<IntWrapper>.self, from: data)
+
+        XCTAssertEqual(decoded, Set([.init(int: 1), .init(int: 2), .init(int: 3)]))
+
+        let encoded = try TransitEncoder().encode(decoded)
+
+        XCTAssert(String(decoding: encoded, as: UTF8.self).contains("~#set"))
+
+        // redecode because the set items' order may be different than what we expect
+        let redecoded = try TransitDecoder().decode(Set<IntWrapper>.self, from: encoded)
+
+        XCTAssertEqual(redecoded, Set([.init(int: 1), .init(int: 2), .init(int: 3)]))
     }
 
     func testSetEmpty() throws {

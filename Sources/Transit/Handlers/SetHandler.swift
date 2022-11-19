@@ -24,6 +24,29 @@ public struct SetHandler: Handler {
             return value
         }
 
-        return ["~#set", Array(set)]
+        var converted: [Any] = []
+        for item in set {
+            if let encodable = item as? Encodable {
+                let encoder = TransitEncoder._TransitEncoder(
+                    value: AnyEncodable(base: encodable),
+                    codingPath: [],
+                    context: context
+                )
+                try encodable.encode(to: encoder)
+                converted.append(encoder.content.value)
+            } else {
+                converted.append(item)
+            }
+        }
+
+        return ["~#set",converted]
+    }
+}
+
+struct AnyEncodable: Encodable {
+    let base: Encodable
+
+    func encode(to encoder: Encoder) throws {
+        try base.encode(to: encoder)
     }
 }
