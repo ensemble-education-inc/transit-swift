@@ -75,6 +75,15 @@ final class TransitTests: XCTestCase {
             let staff: Bool
             let workspaces: [Keyword]
             let preferences: Preferences
+
+            enum CodingKeys: String, CodingKey {
+                case workspaces
+                case id
+                case username
+                case staff = "staff?"
+                case superuser = "superuser?"
+                case preferences
+            }
         }
 
         struct Preferences: Codable {

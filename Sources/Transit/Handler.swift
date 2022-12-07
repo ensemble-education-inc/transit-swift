@@ -87,9 +87,6 @@ public struct Context {
         if keyToUse.starts(with: "~$") {
             keyToUse.removeFirst(2)
         }
-        if keyToUse.hasSuffix("?") {
-            keyToUse.removeLast()
-        }
 
         let sanitized = String(keyToUse)
         if keyToUse.count > 1 {
