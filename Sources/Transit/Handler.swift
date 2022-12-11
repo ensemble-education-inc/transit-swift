@@ -71,6 +71,9 @@ public struct Context {
                 lookUpKey = "\(UnicodeScalar(lookUpKeyHighBit + 48)!)\(UnicodeScalar(lookUpKeyLowBit + 48)!)"
             }
             return "^\(lookUpKey)"
+        } else if key.starts(with: "^") && Int(key.dropFirst()) != nil {
+            // if they key is already cached don't recache it
+            return key
         } else {
             let inserted = self.insertInCache(key)
             let normalized = Keyword(keyword: inserted).encoded
