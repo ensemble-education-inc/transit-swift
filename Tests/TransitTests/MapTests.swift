@@ -71,7 +71,7 @@ final class MapTests: XCTestCase {
 
         let encoded = try TransitEncoder().encode(decoded)
 
-        XCTAssertEqual(encoded, data)
+        XCTAssertDataEquals(encoded, data)
     }
 
     func testMap10Items() throws {
@@ -109,7 +109,7 @@ final class MapTests: XCTestCase {
 
         let encoded = try TransitEncoder().encode(decoded)
 
-        XCTAssertEqual(encoded, data)
+        XCTAssertDataEquals(encoded, data)
 
     }
 
@@ -134,7 +134,7 @@ final class MapTests: XCTestCase {
 
         let encoded = try TransitEncoder().encode(decoded)
 
-        XCTAssertEqual(encoded, data)
+        XCTAssertDataEquals(encoded, data)
 
     }
 
@@ -173,8 +173,7 @@ final class MapTests: XCTestCase {
 
         let encoded = try TransitEncoder().encode(decoded)
 
-        XCTAssertEqual(encoded, data)
-
+        XCTAssertDataEquals(encoded, data)
     }
 
     func testMapSimple() throws {
@@ -198,7 +197,7 @@ final class MapTests: XCTestCase {
 
         let encoded = try TransitEncoder().encode(decoded)
 
-        XCTAssertEqual(encoded, data)
+        XCTAssertDataEquals(encoded, data)
     }
 
     func testMapsFourCharKeywordKeys() throws {
