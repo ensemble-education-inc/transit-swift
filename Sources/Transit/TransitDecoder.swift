@@ -1,4 +1,5 @@
 import Foundation
+import OrderedCollections
 
 public final class TransitDecoder {
     enum TransitDecoderError: Error {
@@ -49,7 +50,7 @@ public final class TransitDecoder {
         }
 
         func container<Key>(keyedBy type: Key.Type) throws -> KeyedDecodingContainer<Key> where Key : CodingKey {
-            guard json is [String: Any] else {
+            guard json is OrderedDictionary<String, Any> else {
                 throw DecodingError.dataCorrupted(.init(codingPath: codingPath, debugDescription: "Expected object but none found."))
             }
             return KeyedDecodingContainer(
@@ -73,8 +74,8 @@ public final class TransitDecoder {
 
         var decoder: _TransitDecoder
 
-        var dictOfValues: [String: Any] {
-            decoder.json as? [String: Any] ?? [:]
+        var dictOfValues: OrderedDictionary<String, Any> {
+            decoder.json as? OrderedDictionary<String, Any> ?? [:]
         }
 
         func value<T>(forKey key: Key) throws -> T {

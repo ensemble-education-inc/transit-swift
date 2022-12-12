@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import OrderedCollections
 
 struct CachingHandler: Handler {
     func prepareForDecode(value: Any, context: inout Context) throws -> Any {
@@ -47,7 +48,7 @@ struct MapHandler: Handler {
         }
 
         slice.removeFirst()
-        var dict: [String: Any] = [:]
+        var dict: OrderedDictionary<String, Any> = [:]
         while let key = slice.popFirst().flatMap({ $0 as? String }), let value = slice.popFirst() {
             let keyToUse = try context.normalize(rawKey: key)
             let valueToInsert = try context.transform(value: value)
@@ -57,6 +58,10 @@ struct MapHandler: Handler {
     }
 
     public func prepareForEncode(value: Any, context: inout Context) throws -> Any {
-        return value
+        guard let dict = value as? OrderedDictionary<String, Any> else {
+            return value
+        }
+
+        return ["^ "] + dict.flatMap({ [$0, $1] })
     }
 }
