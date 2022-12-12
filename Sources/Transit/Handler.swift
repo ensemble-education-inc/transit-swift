@@ -21,13 +21,6 @@ func prepareForDecode(value: Any, context: inout Context) throws -> Any {
     }
 }
 
-//func prepareForEncode(value: Any, withRegisteredHandlers registeredHandlers: [Handler]) throws -> Any {
-//
-//    var context = Context(registeredHandlers: registeredHandlers, transformer: { context, value in try prepareForEncode(value: value, context: &context) })
-//
-//    return try context.transform(value: value)
-//}
-
 func prepareForEncode(value: Any, context: inout Context) throws -> Any {
     return try context.registeredHandlers.reduce(value, { array, handler in
         try handler.prepareForEncode(value: array, context: &context)
