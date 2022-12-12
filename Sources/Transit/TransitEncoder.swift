@@ -91,14 +91,16 @@ public final class TransitEncoder {
             if outputFormatting.contains(.withoutEscapingSlashes) {
                 options.insert(.withoutEscapingSlashes)
             }
+            let valueToEncode: Any
             switch content {
             case let .singleValue(value) where (value as? BuiltInType)?.isScalar ?? false:
-                return try JSONSerialization.data(withJSONObject: ["~#'", value], options: options)
+                valueToEncode = ["~#'", value]
             case let .singleValue(value):
-                return try JSONSerialization.data(withJSONObject: value, options: options)
-            case let .array(array):
-                return try JSONSerialization.data(withJSONObject: array, options: options)
+                valueToEncode = value
+            case let .array(arr):
+                valueToEncode = arr
             }
+            return try JSONSerialization.data(withJSONObject: valueToEncode, options: options)
         }
 
         func container<Key>(keyedBy type: Key.Type) -> KeyedEncodingContainer<Key> where Key : CodingKey {
