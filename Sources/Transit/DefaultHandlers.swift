@@ -8,6 +8,7 @@
 let defaultHandlers: [Handler] = [
     CachingHandler(),
     MapHandler(),
+    ArrayHandler(),
     SetHandler(),
     ScalarHandler(),
     ListHandler(),
