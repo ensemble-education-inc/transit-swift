@@ -16,4 +16,3 @@ let defaultHandlers: [Handler] = [
     URIHandler(),
     UUIDHandler(),
 ]
-
