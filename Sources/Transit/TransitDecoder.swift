@@ -78,7 +78,8 @@ public final class TransitDecoder {
         }
 
         func value<T>(forKey key: Key) throws -> T {
-            guard let untyped = dictOfValues[key.stringValue] else {
+            let keywordified = Keyword(keyword: key.stringValue).encoded
+            guard let untyped = dictOfValues[keywordified] else {
                 throw DecodingError.keyNotFound(key, .init(codingPath: codingPath + [key], debugDescription: "\(key) key not found"))
             }
             guard let typed = untyped as? T else {
@@ -89,6 +90,7 @@ public final class TransitDecoder {
 
         var allKeys: [Key] {
             Array(dictOfValues.keys)
+                .compactMap({ Keyword(encoded: $0)?.rawValue })
                 .compactMap({ return Key(stringValue: $0) })
         }
 

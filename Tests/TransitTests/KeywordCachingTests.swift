@@ -76,7 +76,7 @@ final class KeywordCachingTests: XCTestCase {
 
         let decoded = try TransitDecoder().decode(Decoded.self, from: data)
 
-        XCTAssertEqual(decoded.result.namedExpressions[1].kind, "regex")
+        XCTAssertEqual(decoded.result.namedExpressions[1].kind, "~:regex")
     }
 
 }

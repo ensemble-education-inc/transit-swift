@@ -100,7 +100,8 @@ public final class TransitEncoder {
             case let .array(arr):
                 valueToEncode = arr
             }
-            return try JSONSerialization.data(withJSONObject: valueToEncode, options: options)
+            let finalizedValue = try context.transform(value: valueToEncode)
+            return try JSONSerialization.data(withJSONObject: finalizedValue, options: options)
         }
 
         func container<Key>(keyedBy type: Key.Type) -> KeyedEncodingContainer<Key> where Key : CodingKey {
@@ -135,10 +136,8 @@ public final class TransitEncoder {
             }
 
             mutating func add(key: String, value: Any) throws {
-                let keyword = try encoder.context.prepareKeyForEncoding(key)
-                encoder.content.append(keyword)
-                let processedValue = try encoder.context.transform(value: value)
-                encoder.content.append(processedValue)
+                encoder.content.append("~:\(key)")
+                encoder.content.append(value)
             }
 
             mutating func encodeNil(forKey key: Key) throws {
@@ -203,13 +202,12 @@ public final class TransitEncoder {
 
             mutating func encode<T>(_ value: T, forKey key: Key) throws where T : Encodable {
                 let encoder = _TransitEncoder<T>(value: value, codingPath: encoder.codingPath + [key], context: encoder.context)
-                let cachedKey = try encoder.context.prepareKeyForEncoding(key.stringValue)
                 if value is BuiltInType {
                     let preparedValue = try encoder.context.transform(value: value)
-                    try add(key: cachedKey, value: preparedValue)
+                    try add(key: key.stringValue, value: preparedValue)
                 } else {
                     try value.encode(to: encoder)
-                    try add(key: cachedKey, value: encoder.content.value)
+                    try add(key: key.stringValue, value: encoder.content.value)
                 }
             }
 

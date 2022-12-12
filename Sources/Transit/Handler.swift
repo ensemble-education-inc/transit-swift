@@ -57,27 +57,16 @@ public struct Context {
             // if they key is already cached don't recache it
             return key
         } else {
-            let inserted = self.insertInCache(key)
-            let normalized = Keyword(keyword: inserted).encoded
-            return normalized
+            return self.insertInCache(key)
         }
     }
 
     @discardableResult
     mutating func insertInCache(_ string: String) -> String {
-        var keyToUse = string[...]
-        if keyToUse.starts(with: "~:") {
-            keyToUse.removeFirst(2)
+        if string.count > 3 {
+            keywordCache.array.append(string)
         }
-        if keyToUse.starts(with: "~$") {
-            keyToUse.removeFirst(2)
-        }
-
-        let sanitized = String(keyToUse)
-        if keyToUse.count > 1 {
-            keywordCache.array.append(sanitized)
-        }
-        return sanitized
+        return string
     }
 
     func lookupKeyIndex(_ key: String) -> Int? {
