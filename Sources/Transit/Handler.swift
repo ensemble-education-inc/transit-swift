@@ -7,13 +7,6 @@
 
 import Foundation
 
-func prepareForDecode(value: Any, withRegisteredHandlers registeredHandlers: [Handler]) throws -> Any {
-
-    var context = Context(registeredHandlers: registeredHandlers, transformer: { context, value in try prepareForDecode(value: value, context: &context) })
-
-    return try context.transform(value: value)
-}
-
 func prepareForDecode(value: Any, context: inout Context) throws -> Any {
     let value = try context.registeredHandlers.reduce(value, { array, handler in
         try handler.prepareForDecode(value: array, context: &context)
