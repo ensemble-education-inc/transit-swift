@@ -42,7 +42,8 @@ public final class TransitDecoder {
         }
 
         init(json: Any, codingPath: [CodingKey], handlers: [Handler]) throws {
-            self.json = try prepareForDecode(value: json, withRegisteredHandlers: handlers)
+            var context = Context(registeredHandlers: handlers, transformer: { context, value in try prepareForDecode(value: value, context: &context) })
+            self.json = try prepareForDecode(value: json, context: &context)
             self.codingPath = codingPath
             self.handlers = handlers
         }
