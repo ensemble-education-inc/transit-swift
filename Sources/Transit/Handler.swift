@@ -27,13 +27,17 @@ func prepareForEncode(value: Any, context: inout Context) throws -> Any {
     })
 }
 
-final class RefArray<Element>: RandomAccessCollection {
+final class RefArray<Element>: RandomAccessCollection, CustomStringConvertible {
     var array: [Element] = []
 
     var startIndex: Int { array.startIndex }
     var endIndex: Int { array.endIndex }
     subscript(index: Int) -> Element { array[index] }
     func index(after i: Int) -> Int { array.index(after: i) }
+
+    var description: String {
+        array.description
+    }
 }
 
 public struct Context {
