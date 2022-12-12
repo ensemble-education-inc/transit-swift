@@ -22,6 +22,12 @@ struct CachingHandler: Handler {
     }
 
     public func prepareForEncode(value: Any, context: inout Context) throws -> Any {
+        guard let stringValue = (value as? String) else {
+            return value
+        }
+        if ["~:", "~#", "~$"].contains(where: stringValue.starts(with:)) {
+            return try context.prepareKeyForEncoding(stringValue)
+        }
         return value
     }
 }
