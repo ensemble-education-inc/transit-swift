@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import OrderedCollections
 
 public final class TransitEncoder {
     enum TransitEncoderError: Error {
@@ -37,6 +38,7 @@ public final class TransitEncoder {
         enum Content {
             case singleValue(Any)
             case array([Any])
+            case dictionary(OrderedDictionary<String, Any>)
 
             init() {
                 self = .array([])
@@ -48,6 +50,8 @@ public final class TransitEncoder {
                     return value
                 case let .array(array):
                     return array
+                case let .dictionary(dict):
+                    return dict
                 }
             }
 
@@ -61,15 +65,26 @@ public final class TransitEncoder {
                     return 1
                 case let .array(array):
                     return array.count
+                case let .dictionary(dict):
+                    return dict.count
                 }
             }
 
-            mutating func append(_ value: Any) {
+            mutating func switchToDict() {
+                self = .dictionary([:])
+            }
+
+            mutating func append(key: String? = nil, _ value: Any) {
                 switch self {
                 case .singleValue(_):
                     self = .singleValue(value)
                 case let .array(array):
                     self = .array(array + [value])
+                case var .dictionary(dict):
+                    if let key {
+                        dict[key] = value
+                        self = .dictionary(dict)
+                    }
                 }
             }
         }
@@ -99,14 +114,16 @@ public final class TransitEncoder {
                 valueToEncode = value
             case let .array(arr):
                 valueToEncode = arr
+            case let .dictionary(dict):
+                valueToEncode = dict
             }
             let finalizedValue = try context.transform(value: valueToEncode)
             return try JSONSerialization.data(withJSONObject: finalizedValue, options: options)
         }
 
         func container<Key>(keyedBy type: Key.Type) -> KeyedEncodingContainer<Key> where Key : CodingKey {
-            var container = _KeyedContainer<Key>(codingPath: codingPath, encoder: self)
-            container.addObjectMarker()
+            let container = _KeyedContainer<Key>(codingPath: codingPath, encoder: self)
+            container.encoder.content.switchToDict()
             return KeyedEncodingContainer(
                 container
             )
@@ -129,15 +146,8 @@ public final class TransitEncoder {
                 fatalError()
             }
 
-            mutating func addObjectMarker() {
-                if encoder.content.isEmpty {
-                    encoder.content.append("^ ")
-                }
-            }
-
             mutating func add(key: String, value: Any) throws {
-                encoder.content.append("~:\(key)")
-                encoder.content.append(value)
+                encoder.content.append(key: "~:\(key)", value)
             }
 
             mutating func encodeNil(forKey key: Key) throws {
