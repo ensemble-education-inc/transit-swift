@@ -8,17 +8,9 @@
 import Foundation
 
 func prepareForDecode(value: Any, context: inout Context) throws -> Any {
-    let value = try context.registeredHandlers.reduce(value, { array, handler in
+    return try context.registeredHandlers.reduce(value, { array, handler in
         try handler.prepareForDecode(value: array, context: &context)
     })
-
-    if let array2 = value as? [Any] {
-        return try array2.map({ item in
-            return try prepareForDecode(value: item, context: &context)
-        })
-    } else {
-        return value
-    }
 }
 
 func prepareForEncode(value: Any, context: inout Context) throws -> Any {
