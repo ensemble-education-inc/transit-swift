@@ -79,4 +79,25 @@ final class KeywordCachingTests: XCTestCase {
         XCTAssertEqual(decoded.result.namedExpressions[1].kind, "~:regex")
     }
 
+    func testTwoSets() throws {
+        let data = """
+        ["^ ","~:aaaa",["~#set",[1]],"~:bbbb",["^1",[3]]]
+        """
+        .data(using: .utf8)!
+
+        struct Result: Codable {
+            let aaaa: Set<Int>
+            let bbbb: Set<Int>
+        }
+
+        let decoded = try TransitDecoder().decode(Result.self, from: data)
+
+        XCTAssertEqual(Array(decoded.aaaa).sorted(), [1])
+        XCTAssertEqual(Array(decoded.bbbb), [3])
+
+        let encoded = try TransitEncoder().encode(decoded)
+
+        XCTAssertDataEquals(encoded, data)
+    }
+
 }
