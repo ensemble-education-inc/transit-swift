@@ -317,11 +317,10 @@ public final class TransitEncoder {
             }
 
             mutating func encode<T>(_ value: T) throws where T : Encodable {
-                let encoder = _TransitEncoder<T>(value: value, codingPath: codingPath + [IntCodingKey(intValue: count)].compactMap({ $0 }), context: encoder.context)
                 if value is BuiltInType {
-                    let preparedValue = try encoder.context.transform(value: value)
-                    add(preparedValue)
+                    add(value)
                 } else {
+                    let encoder = _TransitEncoder<T>(value: value, codingPath: codingPath + [IntCodingKey(intValue: count)].compactMap({ $0 }), context: encoder.context)
                     try value.encode(to: encoder)
                     add(encoder.content.value)
                 }

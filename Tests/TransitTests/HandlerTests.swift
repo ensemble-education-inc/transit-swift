@@ -168,6 +168,28 @@ final class HandlerTests: XCTestCase {
         XCTAssertDataEquals(encoded, data)
     }
 
+    func testListsWithKeywords() throws {
+        // list_empty.json
+        let data = """
+        ["^ ","~:aaaa",["~#list",["~:alpha","~:beta"]],"~:bbbb",["^1",["^2","^2","~:delta","^3"]]]
+        """
+        .data(using: .utf8)!
+
+        struct Result: Codable {
+            let aaaa: List<String>
+            let bbbb: List<String>
+        }
+
+        let decoded = try TransitDecoder().decode(Result.self, from: data)
+
+        XCTAssertEqual(Array(decoded.aaaa), ["~:alpha", "~:beta"])
+        XCTAssertEqual(Array(decoded.bbbb), ["~:alpha", "~:alpha", "~:delta", "~:beta"])
+
+        let encoded = try TransitEncoder().encode(decoded)
+
+        XCTAssertDataEquals(encoded, data)
+    }
+
     func testListInMap() throws {
         let data = """
         ["^ ","~:a_list",["~#list",[1,3,2]],"~:an_int",14]
