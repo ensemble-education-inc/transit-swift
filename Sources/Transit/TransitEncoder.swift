@@ -213,6 +213,7 @@ public final class TransitEncoder {
             mutating func encode<T>(_ value: T, forKey key: Key) throws where T : Encodable {
                 let encoder = _TransitEncoder<T>(value: value, codingPath: encoder.codingPath + [key], context: encoder.context)
                 if value is BuiltInType {
+                    // this next line shouldn't strictly be necessary here but it solves a bug with the order of the handlers matters, because the set handler can't add the set tag before the caching handler can cache it
                     let preparedValue = try encoder.context.transform(value: value)
                     try add(key: key.stringValue, value: preparedValue)
                 } else {
