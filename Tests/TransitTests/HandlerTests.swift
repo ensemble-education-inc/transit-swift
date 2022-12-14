@@ -147,7 +147,6 @@ final class HandlerTests: XCTestCase {
     }
 
     func testTwoLists() throws {
-        // list_empty.json
         let data = """
         ["^ ","~:aaaa",["~#list",[1,2]],"~:bbbb",["^1",[3]]]
         """
