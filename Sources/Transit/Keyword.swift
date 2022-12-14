@@ -7,7 +7,7 @@
 
 import Foundation
 
-public struct Keyword {
+public struct Keyword: Equatable, Hashable {
     public let rawValue: String
 
     public init?(encoded: String) {
