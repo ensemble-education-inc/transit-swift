@@ -100,4 +100,39 @@ final class KeywordCachingTests: XCTestCase {
         XCTAssertDataEquals(encoded, data)
     }
 
+    func testSingleValueContainer() throws {
+        // list_empty.json
+        struct KeywordContainer: Codable, Equatable {
+            let inner: Keyword
+
+            init(from decoder: Decoder) throws {
+                self.inner = try Keyword(from: decoder)
+            }
+
+            func encode(to encoder: Encoder) throws {
+                var container = encoder.singleValueContainer()
+                try container.encode(self.inner)
+            }
+        }
+
+        let data = """
+        ["^ ","~:aaaa","~:hello","~:bbbb","^0"]
+        """
+        .data(using: .utf8)!
+
+        struct Result: Codable {
+            let aaaa: KeywordContainer
+            let bbbb: KeywordContainer
+        }
+
+        let decoded = try TransitDecoder().decode(Result.self, from: data)
+
+        XCTAssertEqual(decoded.aaaa.inner, Keyword(keyword: "hello"))
+
+        let encoded = try TransitEncoder().encode(decoded)
+
+        XCTAssertDataEquals(encoded, data)
+    }
+
+
 }
