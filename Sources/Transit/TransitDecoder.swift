@@ -79,8 +79,14 @@ public final class TransitDecoder {
         }
 
         func value<T>(forKey key: Key) throws -> T {
-            let keywordified = Keyword(keyword: key.stringValue).encoded
-            guard let untyped = dictOfValues[keywordified] else {
+            let lookupKey: String
+            if let int = key.intValue {
+                lookupKey = "~i\(int)"
+            } else {
+                lookupKey = Keyword(keyword: key.stringValue).encoded
+            }
+            print(lookupKey, dictOfValues)
+            guard let untyped = dictOfValues[lookupKey] else {
                 throw DecodingError.keyNotFound(key, .init(codingPath: codingPath + [key], debugDescription: "\(key) key not found"))
             }
             guard let typed = untyped as? T else {
@@ -90,9 +96,16 @@ public final class TransitDecoder {
         }
 
         var allKeys: [Key] {
-            Array(dictOfValues.keys)
-                .compactMap({ Keyword(encoded: $0)?.rawValue })
-                .compactMap({ return Key(stringValue: $0) })
+            dictOfValues.keys
+                .compactMap({ transitKey -> Key? in
+                    if let keyword = Keyword(encoded: transitKey)?.rawValue  {
+                        return Key(stringValue: keyword)
+                    } else if transitKey.starts(with: "~i"), let intKey = Int(transitKey.dropFirst(2)) {
+                        return Key(intValue: intKey)
+                    } else {
+                        return nil
+                    }
+                })
         }
 
         func contains(_ key: Key) -> Bool {
