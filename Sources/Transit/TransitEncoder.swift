@@ -146,68 +146,72 @@ public final class TransitEncoder {
                 fatalError()
             }
 
-            mutating func add(key: String, value: Any) throws {
-                encoder.content.append(key: "~:\(key)", value)
+            mutating func add(key: Key, value: Any) throws {
+                if let intValue = key.intValue {
+                    encoder.content.append(key: "~i\(intValue)", value)
+                } else {
+                    encoder.content.append(key: "~:\(key.stringValue)", value)
+                }
             }
 
             mutating func encodeNil(forKey key: Key) throws {
-                try add(key: key.stringValue, value: NSNull())
+                try add(key: key, value: NSNull())
             }
 
             mutating func encode(_ value: Bool, forKey key: Key) throws {
-                try add(key: key.stringValue, value: value)
+                try add(key: key, value: value)
             }
 
             mutating func encode(_ value: String, forKey key: Key) throws {
-                try add(key: key.stringValue, value: value)
+                try add(key: key, value: value)
             }
 
             mutating func encode(_ value: Double, forKey key: Key) throws {
-                try add(key: key.stringValue, value: value)
+                try add(key: key, value: value)
             }
 
             mutating func encode(_ value: Float, forKey key: Key) throws {
-                try add(key: key.stringValue, value: value)
+                try add(key: key, value: value)
             }
 
             mutating func encode(_ value: Int, forKey key: Key) throws {
-                try add(key: key.stringValue, value: value)
+                try add(key: key, value: value)
             }
 
             mutating func encode(_ value: Int8, forKey key: Key) throws {
-                try add(key: key.stringValue, value: value)
+                try add(key: key, value: value)
             }
 
             mutating func encode(_ value: Int16, forKey key: Key) throws {
-                try add(key: key.stringValue, value: value)
+                try add(key: key, value: value)
             }
 
             mutating func encode(_ value: Int32, forKey key: Key) throws {
-                try add(key: key.stringValue, value: value)
+                try add(key: key, value: value)
             }
 
             mutating func encode(_ value: Int64, forKey key: Key) throws {
-                try add(key: key.stringValue, value: value)
+                try add(key: key, value: value)
             }
 
             mutating func encode(_ value: UInt, forKey key: Key) throws {
-                try add(key: key.stringValue, value: value)
+                try add(key: key, value: value)
             }
 
             mutating func encode(_ value: UInt8, forKey key: Key) throws {
-                try add(key: key.stringValue, value: value)
+                try add(key: key, value: value)
             }
 
             mutating func encode(_ value: UInt16, forKey key: Key) throws {
-                try add(key: key.stringValue, value: value)
+                try add(key: key, value: value)
             }
 
             mutating func encode(_ value: UInt32, forKey key: Key) throws {
-                try add(key: key.stringValue, value: value)
+                try add(key: key, value: value)
             }
 
             mutating func encode(_ value: UInt64, forKey key: Key) throws {
-                try add(key: key.stringValue, value: value)
+                try add(key: key, value: value)
             }
 
             mutating func encode<T>(_ value: T, forKey key: Key) throws where T : Encodable {
@@ -215,10 +219,10 @@ public final class TransitEncoder {
                 if value is BuiltInType {
                     // this next line shouldn't strictly be necessary here but it solves a bug with the order of the handlers matters, because the set handler can't add the set tag before the caching handler can cache it
                     let preparedValue = try encoder.context.transform(value: value)
-                    try add(key: key.stringValue, value: preparedValue)
+                    try add(key: key, value: preparedValue)
                 } else {
                     try value.encode(to: encoder)
-                    try add(key: key.stringValue, value: encoder.content.value)
+                    try add(key: key, value: encoder.content.value)
                 }
             }
 

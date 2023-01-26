@@ -14,10 +14,24 @@ final class DictionaryEncodingTests: XCTestCase {
         let dict = ["a": 1, "hello": 2]
 
         let data = try TransitEncoder().encode(dict)
+        let decoded = try TransitDecoder().decode([String: Int].self, from: data)
 
-        let string = """
-            ["^ ","~:a",1,"~:hello",2]
-            """
-        XCTAssertDataEquals(data, Data(string.utf8))
+        XCTAssertEqual(decoded, dict)
+    }
+
+    func testIntKeys() throws {
+        //["^ ","~i1","hey","~i2","hello"]
+
+        let dict = [1: "hey", 2: "hello"]
+
+        let data = try TransitEncoder().encode(dict)
+
+        let string = String(decoding: data, as: UTF8.self)
+        print(string)
+        XCTAssert(string.contains("~i1"))
+        XCTAssert(string.contains("~i2"))
+        let decoded = try TransitDecoder().decode([Int: String].self, from: data)
+
+        XCTAssertEqual(decoded, dict)
     }
 }
