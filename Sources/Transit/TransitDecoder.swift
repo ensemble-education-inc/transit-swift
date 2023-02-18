@@ -85,7 +85,6 @@ public final class TransitDecoder {
             } else {
                 lookupKey = Keyword(keyword: key.stringValue).encoded
             }
-            print(lookupKey, dictOfValues)
             guard let untyped = dictOfValues[lookupKey] else {
                 throw DecodingError.keyNotFound(key, .init(codingPath: codingPath + [key], debugDescription: "\(key) key not found"))
             }

@@ -27,7 +27,6 @@ final class DictionaryEncodingTests: XCTestCase {
         let data = try TransitEncoder().encode(dict)
 
         let string = String(decoding: data, as: UTF8.self)
-        print(string)
         XCTAssert(string.contains("~i1"))
         XCTAssert(string.contains("~i2"))
         let decoded = try TransitDecoder().decode([Int: String].self, from: data)
