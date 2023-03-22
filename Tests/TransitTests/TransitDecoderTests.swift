@@ -3,67 +3,67 @@ import XCTest
 
 final class TransitTests: XCTestCase {
 
-    let data = """
-          [
-            "^ ",
-            "~:result",
-            [
-              "^ ",
-              "~:workspaces",
-              [
-                "~:strayhorn",
-                "~:chet",
-                "~:ella"
-              ],
-              "~:id",
-              9,
-              "~:username",
-              "s@s.net",
-              "~:staff?",
-              false,
-              "~:superuser?",
-              false,
-              "~:preferences",
-              [
-                "^ ",
-                "~:chet/games",
-                [
-                  "^ ",
-                  "~:filter",
-                  [
-                    "^ ",
-                    "^5",
-                    [
-                      11309
-                    ]
-                  ],
-                  "~:chet-games/badges",
-                  [
-                    "~#set",
-                    [
-                      "~:question-count"
-                    ]
-                  ]
-                ],
-                "~:chet/questions",
-                [
-                  "^ ",
-                  "^;",
-                  [
-                    "^ ",
-                    "^5",
-                    [
-                      26517
-                    ]
-                  ]
-                ]
-              ]
-            ]
-          ]
-        """
-        .data(using: .utf8)!
-
-    func testDecoding() throws {
+	func testDecoding() throws {
+			let data = """
+							[
+								"^ ",
+								"~:result",
+								[
+									"^ ",
+									"~:workspaces",
+									[
+										"~:strayhorn",
+										"~:chet",
+										"~:ella"
+									],
+									"~:id",
+									9,
+									"~:username",
+									"s@s.net",
+									"~:staff?",
+									false,
+									"~:superuser?",
+									false,
+									"~:preferences",
+									[
+										"^ ",
+										"~:chet/games",
+										[
+											"^ ",
+											"~:filter",
+											[
+												"^ ",
+												"^5",
+												[
+													11309
+												]
+											],
+											"~:chet-games/badges",
+											[
+												"~#set",
+												[
+													"~:question-count"
+												]
+											]
+										],
+										"~:chet/questions",
+										[
+											"^ ",
+											"^;",
+											[
+												"^ ",
+												"^5",
+												[
+													26517
+												]
+											]
+										]
+									]
+								]
+							]
+						"""
+				.data(using: .utf8)!
+    
         struct Decoded: Codable {
             let result: Result
         }
@@ -111,4 +111,5 @@ final class TransitTests: XCTestCase {
         XCTAssertEqual(decoded.result.workspaces.map(\.rawValue), ["strayhorn", "chet", "ella"])
         XCTAssertEqual(decoded.result.preferences.chetGames.filter.id.first, 11309)
     }
+	
 }
