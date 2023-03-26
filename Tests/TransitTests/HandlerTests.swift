@@ -146,6 +146,33 @@ final class HandlerTests: XCTestCase {
         XCTAssertDataEquals(encoded, data)
     }
 
+    func testListKeywordInsertedTwice() throws {
+        // list_empty.json
+        let data = """
+        ["~#list",[["^ ","~:aaaa",["^0",[["^ ","~:cccc",2]]],"~:bbbb",["^0",[["^ ","^3",5]]]]]]
+        """
+        .data(using: .utf8)!
+
+        struct Item: Codable {
+            let cccc: Int?
+            let bbbb: Int?
+        }
+
+        struct Content: Codable {
+            let aaaa: List<Item>
+            let bbbb: List<Item>
+        }
+
+        let decoded = try TransitDecoder().decode(List<Content>.self, from: data)
+
+        XCTAssertEqual(decoded.first?.aaaa.first?.cccc, 2)
+        XCTAssertEqual(decoded.first?.bbbb.first?.bbbb, 5)
+
+        let encoded = try TransitEncoder().encode(decoded)
+
+        XCTAssertDataEquals(encoded, data)
+    }
+
     func testTwoLists() throws {
         let data = """
         ["^ ","~:aaaa",["~#list",[1,2]],"~:bbbb",["^1",[3]]]
