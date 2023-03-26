@@ -63,7 +63,7 @@ public struct Context {
 
     @discardableResult
     mutating func insertInCache(_ string: String) -> String {
-        if string.count > 3 {
+        if string.count > 3, !keywordCache.contains(string) {
             keywordCache.array.append(string)
         }
         return string
