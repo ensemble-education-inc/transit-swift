@@ -10,9 +10,6 @@ This is an _incomplete_ implementation of the [Transit](https://github.com/cogni
 
 ## Unsupported features
 
-* Encoding
-	* Encoding is not yet supported, but see the `encoder` branch.
-* Int keys in maps
 * String (not keyword) keys in maps
 * `~z` special numbers
 * `~c` characters
