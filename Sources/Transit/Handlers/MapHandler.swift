@@ -13,7 +13,7 @@ struct CachingHandler: Handler {
         guard let stringValue = (value as? String) else {
             return value
         }
-        if ["~:", "~#", "~$"].contains(where: stringValue.starts(with:)) {
+        if ["~:", "~#", "~$", "~i"].contains(where: stringValue.starts(with:)) {
             _ = context.insertInCache(stringValue)
         }
         if stringValue.starts(with: "^") {
@@ -26,7 +26,7 @@ struct CachingHandler: Handler {
         guard let stringValue = (value as? String) else {
             return value
         }
-        if ["~:", "~#", "~$"].contains(where: stringValue.starts(with:)) {
+        if ["~:", "~#", "~$", "~i"].contains(where: stringValue.starts(with:)) {
             return try context.prepareKeyForEncoding(stringValue)
         }
         return value
