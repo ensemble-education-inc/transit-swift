@@ -26,6 +26,10 @@ final class DictionaryEncodingTests: XCTestCase {
 
         let data = try TransitEncoder().encode(dict)
 
+        let option1 = #"["^ ","~i1","hey","~i2","hello"]"#.data(using: .utf8)!
+        let option2 = #"["^ ","~i2","hello""~i1","hey",]"#.data(using: .utf8)!
+        XCTAssert([option1, option2].contains(data))
+
         let string = String(decoding: data, as: UTF8.self)
         XCTAssert(string.contains("~i1"))
         XCTAssert(string.contains("~i2"))
