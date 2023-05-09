@@ -12,8 +12,13 @@ public final class TransitDecoder {
         registeredHandlers = handlers
     }
 
-    public init() {
-        registeredHandlers = defaultHandlers
+    public init(mode: CodingMode = .compact) {
+        switch mode {
+        case .verbose:
+            registeredHandlers = verboseDefaultHandlers
+        case .compact:
+            registeredHandlers = compactDefaultHandlers
+        }
     }
 
     public func decode<T: Decodable>(_ t: T.Type, from data: Data) throws -> T {

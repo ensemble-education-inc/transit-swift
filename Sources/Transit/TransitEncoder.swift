@@ -17,8 +17,13 @@ public final class TransitEncoder {
 
     let outputFormatting: JSONEncoder.OutputFormatting
 
-    public init(handlers: [Handler]? = nil, outputFormatting: JSONEncoder.OutputFormatting = []) {
-        registeredHandlers = handlers ?? defaultHandlers
+    public init(mode: CodingMode = .compact, outputFormatting: JSONEncoder.OutputFormatting = []) {
+        switch mode {
+        case .verbose:
+            registeredHandlers = verboseDefaultHandlers
+        case .compact:
+            registeredHandlers = compactDefaultHandlers
+        }
         self.outputFormatting = outputFormatting
     }
 
