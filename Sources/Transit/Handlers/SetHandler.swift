@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import OrderedCollections
 
 public struct SetHandler: Handler {
     public func prepareForDecode(value: Any, context: inout Context) throws -> Any {
