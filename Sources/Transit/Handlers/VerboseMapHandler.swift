@@ -14,7 +14,13 @@ struct VerboseDictHandler: Handler {
             return value
         }
 
-        return OrderedDictionary(uniqueKeysWithValues: dict)
+        var dictToReturn: OrderedDictionary<String, Any> = [:]
+        for (key, value) in dict {
+            let keyToUse = try context.normalize(rawKey: key)
+            let valueToInsert = try context.transform(value: value)
+            dictToReturn[keyToUse] = valueToInsert
+        }
+        return dictToReturn
     }
 
     func prepareForEncode(value: Any, context: inout Context) throws -> Any {
