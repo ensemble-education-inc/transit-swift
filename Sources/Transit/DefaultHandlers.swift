@@ -19,7 +19,7 @@ let compactDefaultHandlers: [Handler] = [
 ]
 
 let verboseDefaultHandlers: [Handler] = [
-    VerboseDictHandler(),
+    VerboseMapHandler(),
     ArrayHandler(),
     SetHandler(),
     ScalarHandler(),

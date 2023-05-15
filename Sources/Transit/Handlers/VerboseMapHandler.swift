@@ -8,7 +8,7 @@
 import Foundation
 import OrderedCollections
 
-struct VerboseDictHandler: Handler {
+struct VerboseMapHandler: Handler {
     func prepareForDecode(value: Any, context: inout Context) throws -> Any {
         guard let dict = value as? [String: Any] else {
             return value
