@@ -24,6 +24,12 @@ struct VerboseMapHandler: Handler {
     }
 
     func prepareForEncode(value: Any, context: inout Context) throws -> Any {
-        return value
+        guard let dict = value as? OrderedDictionary<String, Any> else {
+            return value
+        }
+
+        return try dict.reduce(into: Dictionary(), { acc, el in
+            acc[el.key] =  try context.transform(value: el.value)
+        })
     }
 }

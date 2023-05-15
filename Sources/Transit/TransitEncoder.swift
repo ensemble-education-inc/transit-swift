@@ -17,6 +17,8 @@ public final class TransitEncoder {
 
     let outputFormatting: JSONEncoder.OutputFormatting
 
+    let mode: CodingMode
+
     public init(mode: CodingMode = .compact, outputFormatting: JSONEncoder.OutputFormatting = []) {
         switch mode {
         case .verbose:
@@ -25,6 +27,7 @@ public final class TransitEncoder {
             registeredHandlers = compactDefaultHandlers
         }
         self.outputFormatting = outputFormatting
+        self.mode = mode
     }
 
     public func encode<T: Encodable>(_ value: T) throws -> Data {
@@ -35,7 +38,7 @@ public final class TransitEncoder {
         } else {
             try value.encode(to: encoder)
         }
-        return try encoder.makeData(outputFormatting: outputFormatting)
+        return try encoder.makeData(mode: mode, outputFormatting: outputFormatting)
     }
 
     final class _TransitEncoder<T: Encodable>: Encoder {
@@ -106,15 +109,17 @@ public final class TransitEncoder {
             self.context = context
         }
 
-        func makeData(outputFormatting: JSONEncoder.OutputFormatting) throws -> Data {
+        func makeData(mode: CodingMode, outputFormatting: JSONEncoder.OutputFormatting) throws -> Data {
             var options: JSONSerialization.WritingOptions = []
             if outputFormatting.contains(.withoutEscapingSlashes) {
                 options.insert(.withoutEscapingSlashes)
             }
             let valueToEncode: Any
             switch content {
-            case let .singleValue(value) where (value as? BuiltInType)?.isScalar ?? false:
+            case let .singleValue(value) where ((value as? BuiltInType)?.isScalar ?? false) && mode == .compact:
                 valueToEncode = ["~#'", value]
+            case let .singleValue(value) where ((value as? BuiltInType)?.isScalar ?? false) && mode == .verbose:
+            valueToEncode = ["~#'": value] as OrderedDictionary<String, Any>
             case let .singleValue(value):
                 valueToEncode = value
             case let .array(arr):

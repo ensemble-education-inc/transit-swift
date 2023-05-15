@@ -22,7 +22,7 @@ let verboseDefaultHandlers: [Handler] = [
     VerboseMapHandler(),
     ArrayHandler(),
     SetHandler(),
-    ScalarHandler(),
+    VerboseScalarHandler(),
     ListHandler(),
     MillisecondsSince1970Handler(),
     ISO8601DateHandler(),
