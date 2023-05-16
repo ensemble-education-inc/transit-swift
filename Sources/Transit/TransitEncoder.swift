@@ -114,6 +114,9 @@ public final class TransitEncoder {
             if outputFormatting.contains(.withoutEscapingSlashes) {
                 options.insert(.withoutEscapingSlashes)
             }
+            if outputFormatting.contains(.sortedKeys) {
+                options.insert(.sortedKeys)
+            }
             let valueToEncode: Any
             switch content {
             case let .singleValue(value) where ((value as? BuiltInType)?.isScalar ?? false) && mode == .compact:

@@ -23,7 +23,7 @@ final class NullTests: XCTestCase {
         }
     }
 
-    func testDecodingWithNull() throws {
+    func testDecodingWithNullCompact() throws {
         let data = """
         ["^ ","~:result",["^ ","~:id",9,"~:username",null]]
         """
@@ -39,7 +39,21 @@ final class NullTests: XCTestCase {
         XCTAssertDataEquals(encoded, data)
     }
 
-    func testDecodingWithValue() throws {
+    func testDecodingWithNullVerbose() throws {
+        let data = #"{"~:result":{"~:id":9,"~:username":null}}"#
+            .data(using: .utf8)!
+
+        let decoded = try TransitDecoder(mode: .verbose).decode(Decoded.self, from: data)
+
+        XCTAssertEqual(decoded.result.username, nil)
+        XCTAssertEqual(decoded.result.id, 9)
+
+        let encoded = try TransitEncoder(mode: .verbose, outputFormatting: .sortedKeys).encode(decoded)
+
+        XCTAssertDataEquals(encoded, data)
+    }
+
+    func testDecodingWithValueCompact() throws {
         let data = """
         ["^ ","~:result",["^ ","~:id",9,"~:username","soroushk"]]
         """
@@ -52,6 +66,21 @@ final class NullTests: XCTestCase {
 
 
         let encoded = try TransitEncoder().encode(decoded)
+
+        XCTAssertDataEquals(encoded, data)
+    }
+
+    func testDecodingWithValueVerbose() throws {
+        let data = #"{"~:result":{"~:id":9,"~:username":"soroushk"}}"#
+            .data(using: .utf8)!
+
+        let decoded = try TransitDecoder(mode: .verbose).decode(Decoded.self, from: data)
+
+        XCTAssertEqual(decoded.result.username, "soroushk")
+        XCTAssertEqual(decoded.result.id, 9)
+
+
+        let encoded = try TransitEncoder(mode: .verbose, outputFormatting: .sortedKeys).encode(decoded)
 
         XCTAssertDataEquals(encoded, data)
     }
