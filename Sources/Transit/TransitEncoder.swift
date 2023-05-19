@@ -31,7 +31,7 @@ public final class TransitEncoder {
     }
 
     public func encode<T: Encodable>(_ value: T) throws -> Data {
-        let context = Context(registeredHandlers: registeredHandlers, transformer: { context, value in try prepareForEncode(value: value, context: &context) })
+        let context = Context(registeredHandlers: registeredHandlers, mode: mode, transformer: { context, value in try prepareForEncode(value: value, context: &context) })
         let encoder = _TransitEncoder(value: value, codingPath: [], context: context)
         if value is BuiltInType {
             encoder.content = .singleValue(value)
@@ -162,6 +162,8 @@ public final class TransitEncoder {
             mutating func add(key: Key, value: Any) throws {
                 if let intValue = key.intValue {
                     encoder.content.append(key: "~i\(intValue)", value)
+                } else if key.stringValue.starts(with: "~") {
+                    encoder.content.append(key: key.stringValue, value)
                 } else {
                     encoder.content.append(key: "~:\(key.stringValue)", value)
                 }

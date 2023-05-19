@@ -8,8 +8,11 @@ public final class TransitDecoder {
 
     let registeredHandlers: [Handler]
 
+    let mode: CodingMode
+
     public init(handlers: [Handler]) {
         registeredHandlers = handlers
+        self.mode = .compact
     }
 
     public init(mode: CodingMode = .compact) {
@@ -19,10 +22,11 @@ public final class TransitDecoder {
         case .compact:
             registeredHandlers = compactDefaultHandlers
         }
+        self.mode = mode
     }
 
     public func decode<T: Decodable>(_ t: T.Type, from data: Data) throws -> T {
-        let encoder = try _TransitDecoder(data: data, codingPath: [], handlers: registeredHandlers)
+        let encoder = try _TransitDecoder(data: data, codingPath: [], handlers: registeredHandlers, mode: mode)
         if let value = encoder.json as? T {
             // If we're decoding a single value and we already have the right value,
             // (because, e.g., it's been processed by a Handler already), just return that value
@@ -42,16 +46,19 @@ public final class TransitDecoder {
 
         let handlers: [Handler]
 
-        convenience init(data: Data, codingPath: [CodingKey], handlers: [Handler]) throws {
+        let mode: CodingMode
+
+        convenience init(data: Data, codingPath: [CodingKey], handlers: [Handler], mode: CodingMode) throws {
             let json = try JSONSerialization.jsonObject(with: data)
-            try self.init(json: json, codingPath: [], handlers: handlers)
+            try self.init(json: json, codingPath: [], handlers: handlers, mode: mode)
         }
 
-        init(json: Any, codingPath: [CodingKey], handlers: [Handler]) throws {
-            var context = Context(registeredHandlers: handlers, transformer: { context, value in try prepareForDecode(value: value, context: &context) })
+        init(json: Any, codingPath: [CodingKey], handlers: [Handler], mode: CodingMode) throws {
+            var context = Context(registeredHandlers: handlers, mode: mode, transformer: { context, value in try prepareForDecode(value: value, context: &context) })
             self.json = try prepareForDecode(value: json, context: &context)
             self.codingPath = codingPath
             self.handlers = handlers
+            self.mode = mode
         }
 
         func container<Key>(keyedBy type: Key.Type) throws -> KeyedDecodingContainer<Key> where Key : CodingKey {
@@ -183,14 +190,14 @@ public final class TransitDecoder {
                 return try value(forKey: key) as T
             } catch { }
             let dict = try value(forKey: key) as Any
-            let decoder = try _TransitDecoder(json: dict, codingPath: decoder.codingPath + [key], handlers: decoder.handlers)
+            let decoder = try _TransitDecoder(json: dict, codingPath: decoder.codingPath + [key], handlers: decoder.handlers, mode: decoder.mode)
             return try T(from: decoder)
         }
 
         func nestedContainer<NestedKey>(keyedBy type: NestedKey.Type, forKey key: Key) throws -> KeyedDecodingContainer<NestedKey> where NestedKey : CodingKey {
 
             let array = try value(forKey: key) as [Any]
-            let decoder = try _TransitDecoder(json: array, codingPath: decoder.codingPath + [key], handlers: decoder.handlers)
+            let decoder = try _TransitDecoder(json: array, codingPath: decoder.codingPath + [key], handlers: decoder.handlers, mode: decoder.mode)
             return KeyedDecodingContainer(_KeyedContainer<NestedKey>(decoder: decoder))
         }
 
@@ -319,7 +326,7 @@ public final class TransitDecoder {
             if let typed = untyped as? T {
                 return typed
             }
-            let decoder = try _TransitDecoder(json: untyped, codingPath: codingPath + [IntCodingKey(intValue: currentIndex)!], handlers: decoder.handlers)
+            let decoder = try _TransitDecoder(json: untyped, codingPath: codingPath + [IntCodingKey(intValue: currentIndex)!], handlers: decoder.handlers, mode: decoder.mode)
 
             return try T(from: decoder)
         }

@@ -9,6 +9,9 @@ import Foundation
 import OrderedCollections
 
 public struct SetHandler: Handler {
+
+    let mode: CodingMode
+
     public func prepareForDecode(value: Any, context: inout Context) throws -> Any {
         if let array = value as? [Any] {
             guard array.first as? String == "~#set" else {
@@ -44,7 +47,12 @@ public struct SetHandler: Handler {
             }
         }
 
-        return ["~#set", converted]
+        switch mode {
+        case .verbose:
+            return ["~#set": converted] as [String: Any]
+        case .compact:
+            return ["~#set", converted] as [Any]
+        }
     }
 }
 

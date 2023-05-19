@@ -9,7 +9,7 @@ let compactDefaultHandlers: [Handler] = [
     CachingHandler(),
     MapHandler(),
     ArrayHandler(),
-    SetHandler(),
+    SetHandler(mode: .compact),
     ScalarHandler(),
     ListHandler(),
     MillisecondsSince1970Handler(),
@@ -21,7 +21,7 @@ let compactDefaultHandlers: [Handler] = [
 let verboseDefaultHandlers: [Handler] = [
     VerboseMapHandler(),
     ArrayHandler(),
-    SetHandler(),
+    SetHandler(mode: .verbose),
     VerboseScalarHandler(),
     ListHandler(),
     MillisecondsSince1970Handler(),

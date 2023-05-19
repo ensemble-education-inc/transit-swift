@@ -34,6 +34,7 @@ final class RefArray<Element>: RandomAccessCollection, CustomStringConvertible {
 
 public struct Context {
     let registeredHandlers: [Handler]
+    let mode: CodingMode
     var keywordCache: RefArray<String> = .init()
     let transformer: (inout Context, Any) throws -> Any
 

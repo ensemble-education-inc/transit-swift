@@ -30,10 +30,20 @@ extension List: Codable where Element: Codable {
         self.items = items
     }
 
+    enum CodingKeys: String, CodingKey {
+        case list = "~#list"
+    }
+
     public func encode(to encoder: Encoder) throws {
-        var container = encoder.unkeyedContainer()
-        try container.encode("~#list")
-        try container.encode(items)
+        let mode = (encoder as? TransitEncoder._TransitEncoder<Self>)?.context.mode ?? .compact
+        if mode == .compact {
+            var container = encoder.unkeyedContainer()
+            try container.encode("~#list")
+            try container.encode(items)
+        } else {
+            var container = encoder.container(keyedBy: CodingKeys.self)
+            try container.encode(items, forKey: .list)
+        }
     }
 }
 
