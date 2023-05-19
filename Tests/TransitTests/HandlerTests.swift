@@ -330,7 +330,7 @@ final class HandlerTests: XCTestCase {
         XCTAssertEqual(decoded.first?.aaaa.first?.cccc, 2)
         XCTAssertEqual(decoded.first?.bbbb.first?.bbbb, 5)
 
-        let encoded = try TransitEncoder(mode: .verbose).encode(decoded)
+        let encoded = try TransitEncoder(mode: .verbose, outputFormatting: .sortedKeys).encode(decoded)
 
         XCTAssertDataEquals(encoded, data)
     }
@@ -372,7 +372,7 @@ final class HandlerTests: XCTestCase {
         XCTAssertEqual(Array(decoded.aaaa), [1, 2])
         XCTAssertEqual(Array(decoded.bbbb), [3])
 
-        let encoded = try TransitEncoder(mode: .verbose).encode(decoded)
+        let encoded = try TransitEncoder(mode: .verbose, outputFormatting: .sortedKeys).encode(decoded)
 
         XCTAssertDataEquals(encoded, data)
     }
@@ -416,7 +416,7 @@ final class HandlerTests: XCTestCase {
         XCTAssertEqual(Array(decoded.aaaa), ["~:alpha", "~:beta"])
         XCTAssertEqual(Array(decoded.bbbb), ["~:alpha", "~:alpha", "~:delta", "~:beta"])
 
-        let encoded = try TransitEncoder(mode: .verbose).encode(decoded)
+        let encoded = try TransitEncoder(mode: .verbose, outputFormatting: .sortedKeys).encode(decoded)
 
         XCTAssertDataEquals(encoded, data)
     }
