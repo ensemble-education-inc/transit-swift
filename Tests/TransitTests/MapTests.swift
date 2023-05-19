@@ -11,7 +11,7 @@ import XCTest
 
 final class MapTests: XCTestCase {
 
-    func testEmptyMap() throws {
+    func testEmptyMapCompact() throws {
         struct Result: Codable {
 
         }
@@ -22,7 +22,18 @@ final class MapTests: XCTestCase {
         XCTAssertDataEquals(data, Data(#"["^ "]"#.utf8))
     }
 
-    func testMap10Nested() throws {
+    func testEmptyMapVerbose() throws {
+        struct Result: Codable {
+
+        }
+
+        let encoder = TransitEncoder(mode: .verbose)
+        let data = try encoder.encode(Result())
+
+        XCTAssertDataEquals(data, Data(#"{}"#.utf8))
+    }
+
+    func testMap10NestedCompact() throws {
         // map_10_nested.json
         let data = """
         ["^ ","~:f",["^ ","~:key0000",0,"~:key0001",1,"~:key0002",2,"~:key0003",3,"~:key0004",4,"~:key0005",5,"~:key0006",6,"~:key0007",7,"~:key0008",8,"~:key0009",9],"~:s",["^ ","^0",0,"^1",1,"^2",2,"^3",3,"^4",4,"^5",5,"^6",6,"^7",7,"^8",8,"^9",9]]
@@ -74,7 +85,62 @@ final class MapTests: XCTestCase {
         XCTAssertDataEquals(encoded, data)
     }
 
-    func testMap10Items() throws {
+    func testMap10NestedVerbose() throws {
+        // map_10_nested.json
+        let data = """
+        {"~:f":{"~:key0000":0,"~:key0001":1,"~:key0002":2,"~:key0003":3,"~:key0004":4,"~:key0005":5,"~:key0006":6,"~:key0007":7,"~:key0008":8,"~:key0009":9},"~:s":{"~:key0000":0,"~:key0001":1,"~:key0002":2,"~:key0003":3,"~:key0004":4,"~:key0005":5,"~:key0006":6,"~:key0007":7,"~:key0008":8,"~:key0009":9}}
+        """
+            .data(using: .utf8)!
+
+        struct Decoded: Codable, Equatable {
+            let f: Inner
+            let s: Inner
+        }
+        struct Inner: Codable, Equatable {
+            let key0000: Int
+            let key0001: Int
+            let key0002: Int
+            let key0003: Int
+            let key0004: Int
+            let key0005: Int
+            let key0006: Int
+            let key0007: Int
+            let key0008: Int
+            let key0009: Int
+        }
+
+        let decoded = try TransitDecoder(mode: .verbose).decode(Decoded.self, from: data)
+
+        XCTAssertEqual(decoded.f.key0000, 0)
+        XCTAssertEqual(decoded.f.key0001, 1)
+        XCTAssertEqual(decoded.f.key0002, 2)
+        XCTAssertEqual(decoded.f.key0003, 3)
+        XCTAssertEqual(decoded.f.key0004, 4)
+        XCTAssertEqual(decoded.f.key0005, 5)
+        XCTAssertEqual(decoded.f.key0006, 6)
+        XCTAssertEqual(decoded.f.key0007, 7)
+        XCTAssertEqual(decoded.f.key0008, 8)
+        XCTAssertEqual(decoded.f.key0009, 9)
+        XCTAssertEqual(decoded.s.key0000, 0)
+        XCTAssertEqual(decoded.s.key0001, 1)
+        XCTAssertEqual(decoded.s.key0002, 2)
+        XCTAssertEqual(decoded.s.key0003, 3)
+        XCTAssertEqual(decoded.s.key0004, 4)
+        XCTAssertEqual(decoded.s.key0005, 5)
+        XCTAssertEqual(decoded.s.key0006, 6)
+        XCTAssertEqual(decoded.s.key0007, 7)
+        XCTAssertEqual(decoded.s.key0008, 8)
+        XCTAssertEqual(decoded.s.key0009, 9)
+
+        let encoded = try TransitEncoder(mode: .verbose).encode(decoded)
+
+        let redecoded = try TransitDecoder(mode: .verbose).decode(Decoded.self, from: encoded)
+
+        XCTAssertEqual(decoded, redecoded)
+
+    }
+
+    func testMap10ItemsCompact() throws {
         // map_10_items.json
         let data = """
         ["^ ","~:key0000",0,"~:key0001",1,"~:key0002",2,"~:key0003",3,"~:key0004",4,"~:key0005",5,"~:key0006",6,"~:key0007",7,"~:key0008",8,"~:key0009",9]
@@ -113,7 +179,46 @@ final class MapTests: XCTestCase {
 
     }
 
-    func testMapMixed() throws {
+    func testMap10ItemsVerbose() throws {
+        // map_10_items.json
+        let data = """
+        {"~:key0000":0,"~:key0001":1,"~:key0002":2,"~:key0003":3,"~:key0004":4,"~:key0005":5,"~:key0006":6,"~:key0007":7,"~:key0008":8,"~:key0009":9}
+        """
+            .data(using: .utf8)!
+
+        struct Decoded: Codable, Equatable {
+            let key0000: Int
+            let key0001: Int
+            let key0002: Int
+            let key0003: Int
+            let key0004: Int
+            let key0005: Int
+            let key0006: Int
+            let key0007: Int
+            let key0008: Int
+            let key0009: Int
+        }
+
+        let decoded = try TransitDecoder(mode: .verbose).decode(Decoded.self, from: data)
+
+        XCTAssertEqual(decoded.key0000, 0)
+        XCTAssertEqual(decoded.key0001, 1)
+        XCTAssertEqual(decoded.key0002, 2)
+        XCTAssertEqual(decoded.key0003, 3)
+        XCTAssertEqual(decoded.key0004, 4)
+        XCTAssertEqual(decoded.key0005, 5)
+        XCTAssertEqual(decoded.key0006, 6)
+        XCTAssertEqual(decoded.key0007, 7)
+        XCTAssertEqual(decoded.key0008, 8)
+        XCTAssertEqual(decoded.key0009, 9)
+
+        let encoded = try TransitEncoder(mode: .verbose, outputFormatting: .sortedKeys).encode(decoded)
+
+        XCTAssertDataEquals(encoded, data)
+
+    }
+
+    func testMapMixedCompact() throws {
         // map_mixed.json
         let data = """
         ["^ ","~:c",true,"~:b","a string","~:a",1]
@@ -138,7 +243,32 @@ final class MapTests: XCTestCase {
 
     }
 
-    func testMapNested() throws {
+    func testMapMixedVerbose() throws {
+        // map_mixed.json
+        let data = """
+        {"~:a":1,"~:b":"a string","~:c":true}
+        """
+            .data(using: .utf8)!
+
+        struct Decoded: Codable, Equatable {
+            let c: Bool
+            let b: String
+            let a: Int
+        }
+
+        let decoded = try TransitDecoder(mode: .verbose).decode(Decoded.self, from: data)
+
+        XCTAssertEqual(decoded.c, true)
+        XCTAssertEqual(decoded.b, "a string")
+        XCTAssertEqual(decoded.a, 1)
+
+        let encoded = try TransitEncoder(mode: .verbose, outputFormatting: .sortedKeys).encode(decoded)
+
+        XCTAssertDataEquals(encoded, data)
+
+    }
+
+    func testMapNestedCompact() throws {
         // map_nested.json
         let data = """
         ["^ ","~:simple",["^ ","~:c",3,"~:b",2,"~:a",1],"~:mixed",["^ ","~:c",true,"~:b","a string","~:a",1]]
@@ -176,7 +306,45 @@ final class MapTests: XCTestCase {
         XCTAssertDataEquals(encoded, data)
     }
 
-    func testMapSimple() throws {
+    func testMapNestedVerbose() throws {
+        // map_nested.json
+        let data = """
+        {"~:mixed":{"~:a":1,"~:b":"a string","~:c":true},"~:simple":{"~:a":1,"~:b":2,"~:c":3}}
+        """
+            .data(using: .utf8)!
+
+        struct Decoded: Codable {
+            let simple: Simple
+            let mixed: Mixed
+        }
+
+        struct Simple: Codable {
+            let c: Int
+            let b: Int
+            let a: Int
+        }
+
+        struct Mixed: Codable {
+            let c: Bool
+            let b: String
+            let a: Int
+        }
+
+        let decoded = try TransitDecoder(mode: .verbose).decode(Decoded.self, from: data)
+
+        XCTAssertEqual(decoded.mixed.c, true)
+        XCTAssertEqual(decoded.mixed.b, "a string")
+        XCTAssertEqual(decoded.mixed.a, 1)
+        XCTAssertEqual(decoded.simple.c, 3)
+        XCTAssertEqual(decoded.simple.b, 2)
+        XCTAssertEqual(decoded.simple.a, 1)
+
+        let encoded = try TransitEncoder(mode: .verbose, outputFormatting: .sortedKeys).encode(decoded)
+
+        XCTAssertDataEquals(encoded, data)
+    }
+
+    func testMapSimpleCompact() throws {
         // map_simple.json
         let data = """
         ["^ ","~:c",3,"~:b",2,"~:a",1]
@@ -200,7 +368,31 @@ final class MapTests: XCTestCase {
         XCTAssertDataEquals(encoded, data)
     }
 
-    func testMapsFourCharKeywordKeys() throws {
+    func testMapSimpleVerbose() throws {
+        // map_simple.json
+        let data = """
+        {"~:a":1,"~:b":2,"~:c":3}
+        """
+            .data(using: .utf8)!
+
+        struct Simple: Codable {
+            let c: Int
+            let b: Int
+            let a: Int
+        }
+
+        let decoded = try TransitDecoder(mode: .verbose).decode(Simple.self, from: data)
+
+        XCTAssertEqual(decoded.c, 3)
+        XCTAssertEqual(decoded.b, 2)
+        XCTAssertEqual(decoded.a, 1)
+
+        let encoded = try TransitEncoder(mode: .verbose, outputFormatting: .sortedKeys).encode(decoded)
+
+        XCTAssertDataEquals(encoded, data)
+    }
+
+    func testMapsFourCharKeywordKeysVerbose() throws {
         // maps_four_char_keyword_keys.json
         let data = """
         [["^ ","~:bbbb",2,"~:aaaa",1],["^ ","^0",4,"^1",3],["^ ","^0",6,"^1",5]]
@@ -222,6 +414,32 @@ final class MapTests: XCTestCase {
         XCTAssertEqual(decoded[2].aaaa, 5)
 
         let encoded = try TransitEncoder().encode(decoded)
+
+        XCTAssertDataEquals(encoded, data)
+    }
+
+    func testMapsFourCharKeywordKeysCompact() throws {
+        // maps_four_char_keyword_keys.json
+        let data = """
+        [{"~:aaaa":1,"~:bbbb":2},{"~:aaaa":3,"~:bbbb":4},{"~:aaaa":5,"~:bbbb":6}]
+        """
+        .data(using: .utf8)!
+
+        struct FourChar: Codable {
+            let bbbb: Int
+            let aaaa: Int
+        }
+
+        let decoded = try TransitDecoder(mode: .verbose).decode([FourChar].self, from: data)
+
+        XCTAssertEqual(decoded[0].bbbb, 2)
+        XCTAssertEqual(decoded[0].aaaa, 1)
+        XCTAssertEqual(decoded[1].bbbb, 4)
+        XCTAssertEqual(decoded[1].aaaa, 3)
+        XCTAssertEqual(decoded[2].bbbb, 6)
+        XCTAssertEqual(decoded[2].aaaa, 5)
+
+        let encoded = try TransitEncoder(mode: .verbose, outputFormatting: .sortedKeys).encode(decoded)
 
         XCTAssertDataEquals(encoded, data)
     }
