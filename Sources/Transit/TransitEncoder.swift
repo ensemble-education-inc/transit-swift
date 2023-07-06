@@ -79,7 +79,11 @@ public final class TransitEncoder {
             }
 
             mutating func switchToDict() {
-                self = .dictionary([:])
+                if case .dictionary = self {
+                    // do nothing
+                } else {
+                    self = .dictionary([:])
+                }
             }
 
             mutating func append(key: String? = nil, _ value: Any) {
