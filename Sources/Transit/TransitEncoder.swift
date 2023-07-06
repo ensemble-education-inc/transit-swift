@@ -122,7 +122,7 @@ public final class TransitEncoder {
             case let .singleValue(value) where ((value as? BuiltInType)?.isScalar ?? false) && mode == .compact:
                 valueToEncode = ["~#'", value]
             case let .singleValue(value) where ((value as? BuiltInType)?.isScalar ?? false) && mode == .verbose:
-            valueToEncode = ["~#'": value] as OrderedDictionary<String, Any>
+                valueToEncode = ["~#'": value] as OrderedDictionary<String, Any>
             case let .singleValue(value):
                 valueToEncode = value
             case let .array(arr):
