@@ -8,7 +8,7 @@
 import Foundation
 
 public struct List<Element>: RandomAccessCollection {
-    var items: [Element]
+    public var items: [Element]
 
     public var startIndex: Int { items.startIndex }
     public var endIndex: Int { items.endIndex }
@@ -17,6 +17,10 @@ public struct List<Element>: RandomAccessCollection {
 
     public init() {
         self.items = []
+    }
+
+    public init(items: [Element]) {
+        self.items = items
     }
 }
 
