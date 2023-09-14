@@ -392,7 +392,7 @@ final class MapTests: XCTestCase {
         XCTAssertDataEquals(encoded, data)
     }
 
-    func testMapsFourCharKeywordKeysVerbose() throws {
+    func testMapsFourCharKeywordKeysCompact() throws {
         // maps_four_char_keyword_keys.json
         let data = """
         [["^ ","~:bbbb",2,"~:aaaa",1],["^ ","^0",4,"^1",3],["^ ","^0",6,"^1",5]]
@@ -418,7 +418,7 @@ final class MapTests: XCTestCase {
         XCTAssertDataEquals(encoded, data)
     }
 
-    func testMapsFourCharKeywordKeysCompact() throws {
+    func testMapsFourCharKeywordKeysVerbose() throws {
         // maps_four_char_keyword_keys.json
         let data = """
         [{"~:aaaa":1,"~:bbbb":2},{"~:aaaa":3,"~:bbbb":4},{"~:aaaa":5,"~:bbbb":6}]
