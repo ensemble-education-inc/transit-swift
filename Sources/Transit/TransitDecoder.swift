@@ -97,7 +97,7 @@ public final class TransitDecoder {
             } else {
                 lookupKey = Keyword(keyword: key.stringValue).encoded
             }
-            guard let untyped = dictOfValues[lookupKey] else {
+            guard let untyped = dictOfValues[lookupKey] ?? dictOfValues[key.stringValue] else {
                 throw DecodingError.keyNotFound(key, .init(codingPath: codingPath + [key], debugDescription: "\(key) key not found"))
             }
             guard let typed = untyped as? T else {
@@ -114,7 +114,7 @@ public final class TransitDecoder {
                     } else if transitKey.starts(with: "~i"), let intKey = Int(transitKey.dropFirst(2)) {
                         return Key(intValue: intKey)
                     } else {
-                        return nil
+                        return Key(stringValue: transitKey)
                     }
                 })
         }

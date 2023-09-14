@@ -444,4 +444,31 @@ final class MapTests: XCTestCase {
         XCTAssertDataEquals(encoded, data)
     }
 
+    func testMapStringKeysCompact() throws {
+        // map_string_keys.verbose.json
+        let data = """
+        ["^ ","first","1","second","2","third","3"]
+        """
+        .data(using: .utf8)!
+
+        let decoded = try TransitDecoder(mode: .compact).decode([String: String].self, from: data)
+
+        XCTAssertEqual(decoded["first"], "1")
+        XCTAssertEqual(decoded["second"], "2")
+        XCTAssertEqual(decoded["third"], "3")
+    }
+
+    func testMapStringKeysVerbose() throws {
+        // map_string_keys.verbose.json
+        let data = """
+        {"first":"1","second":"2","third":"3"}
+        """
+        .data(using: .utf8)!
+
+        let decoded = try TransitDecoder(mode: .verbose).decode([String: String].self, from: data)
+
+        XCTAssertEqual(decoded["first"], "1")
+        XCTAssertEqual(decoded["second"], "2")
+        XCTAssertEqual(decoded["third"], "3")
+    }
 }
